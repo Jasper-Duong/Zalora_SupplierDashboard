@@ -2,7 +2,12 @@ import { Button, Modal } from "antd";
 import styled from "styled-components";
 import React, { useState } from "react";
 
-const AntdModal = ({ openModalBtnText, title, BodyComponent }) => {
+const AntdModal = ({
+  openModalBtnText,
+  title,
+  BodyComponent,
+  ShowModalBtn,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -10,23 +15,21 @@ const AntdModal = ({ openModalBtnText, title, BodyComponent }) => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   return (
     <Styled>
-      <Button type="primary" onClick={showModal}>
-        {openModalBtnText || "Open Modal"}
-      </Button>
+      {ShowModalBtn ? (
+        <ShowModalBtn showModal={showModal} />
+      ) : (
+        <Button type="primary" onClick={showModal}>
+          {openModalBtnText || "Open Modal"}
+        </Button>
+      )}
+
       <Modal
         destroyOnClose
         title={title || "Basic Modal"}
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={closeModal}
         footer={null}
       >
         <BodyComponent closeModal={closeModal} />

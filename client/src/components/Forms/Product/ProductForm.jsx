@@ -1,14 +1,10 @@
 import { Form, Input, InputNumber, Select, Switch } from "antd";
 import React from "react";
-import FormBtns from "./FormBtns";
-import { supplierOptions } from "../../mockdata/suppliers";
-import { formLayout } from "../../constants/forms";
+import FormBtns from "../FormBtns";
+import { supplierOptions } from "../../../mockdata/suppliers";
+import { formLayout } from "../../../constants/forms";
 
-export default function EditProductForm({ closeModal, product }) {
-  const onFinish = (values) => {
-    console.log({ values });
-    closeModal();
-  };
+export default function ProductForm({ closeModal, product, onFinish, submitBtnText }) {
   return (
     <Form
       onFinish={onFinish}
@@ -67,7 +63,7 @@ export default function EditProductForm({ closeModal, product }) {
       >
         <Select mode="multiple" options={supplierOptions} />
       </Form.Item>
-      <FormBtns submitBtnText="Update" closeModal={closeModal} />
+      <FormBtns submitBtnText={submitBtnText} closeModal={closeModal} />
     </Form>
   );
 }
