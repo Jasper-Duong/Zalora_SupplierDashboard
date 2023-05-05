@@ -5,5 +5,12 @@ export default function AddSupplierBtn({ showModal }) {
   const handleClick = () => {
     showModal();
   };
-  return <Button onClick={handleClick}>Add Supplier</Button>;
+  return (
+    <Button
+      style={{ float: "left", marginBottom: "1rem" }}
+      onClick={handleClick}
+    >
+      Add Supplier
+    </Button>
+  );
 }

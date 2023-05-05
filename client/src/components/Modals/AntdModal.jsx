@@ -7,6 +7,7 @@ const AntdModal = ({
   title,
   BodyComponent,
   ShowModalBtn,
+  data
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -18,7 +19,7 @@ const AntdModal = ({
   return (
     <Styled>
       {ShowModalBtn ? (
-        <ShowModalBtn showModal={showModal} />
+        <ShowModalBtn showModal={showModal} data={data}/>
       ) : (
         <Button type="primary" onClick={showModal}>
           {openModalBtnText || "Open Modal"}

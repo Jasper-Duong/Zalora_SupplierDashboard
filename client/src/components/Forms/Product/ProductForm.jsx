@@ -21,7 +21,7 @@ export default function ProductForm({ closeModal, product, onFinish, submitBtnTe
       </Form.Item>
       <Form.Item
         label="Brand Name"
-        name="brandName"
+        name="brand"
         rules={[{ required: true, message: "Brand Name is required" }]}
       >
         <Input />

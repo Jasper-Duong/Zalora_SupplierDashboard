@@ -1,15 +1,19 @@
-import { Button } from "antd"
-import ProductsTable from "../Table/ProductsTable"
+import { Button } from "antd";
+import ProductsTable from "../Table/ProductsTable";
+import AntdModal from "../Modals/AntdModal";
+import AddProduct from "../AddProduct/AddProduct";
+import AddProductBtn from "../AddProduct/AddProductBtn";
 
 export const ProductTab = () => {
-    const addNewProduct = () => {
-        alert("Add new product")
-    }
+  return (
+    <div className="product-container">
+      <AntdModal
+        ShowModalBtn={AddProductBtn}
+        title="Add Product"
+        BodyComponent={AddProduct}
+      />
 
-    return (
-        <div className="product-container">
-            <Button type="primary" style={{float: "left"}} onClick={addNewProduct}>New product</Button>
-            <ProductsTable />
-       </div>
-    )
-}
+      <ProductsTable />
+    </div>
+  );
+};

@@ -1,11 +1,12 @@
 import React from "react";
 import SupplierTabs from "../Tabs/SupplierTabs/SupplierTabs";
-import { suppliers } from "../../mockdata/suppliers";
+import { useSelector } from "react-redux";
 
 export default function EditSupplier({ closeModal }) {
+  const { selectedSupplier } = useSelector((state) => state.supplierReducer);
   return (
     <div>
-      <SupplierTabs closeModal={closeModal} supplier={suppliers[0]} />
+      <SupplierTabs closeModal={closeModal} supplier={selectedSupplier} />
     </div>
   );
 }
