@@ -11,9 +11,9 @@ import (
 
 var DB *gorm.DB
 
-func migrateUp(db *gorm.DB) {
+/*func migrateUp() {
 	migrations.MigrateUpSuppliers(DB)
-}
+}*/
 
 func ConnectDB() {
 	var err error
@@ -32,5 +32,5 @@ func ConnectDB() {
 	dsn = dsn + db_name
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	migrations.MigrateUpSuppliers(DB)
+	migrations.MigrateUp(DB)
 }

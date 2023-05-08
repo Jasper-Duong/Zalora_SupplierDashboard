@@ -7,5 +7,7 @@ import (
 )
 
 func LoadSuppliersRoute(route *gin.RouterGroup) {
-	route.GET("/", handlers.GetSuppliers)
+	route.GET("/", handlers.GetSuppliersHandler)
+	route.POST("/", handlers.CreateSuppliersHandler)
+	route.PUT("/", handlers.UpdateSuppliers)
 }
