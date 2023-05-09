@@ -14,6 +14,7 @@ var DB *gorm.DB
 func migrateUp(db *gorm.DB) {
 	migrations.MigrateUpSuppliers(DB)
 	migrations.MigrateUpProducts(DB)
+	migrations.MigrateUpProductsSuppliers(DB)
 }
 
 func ConnectDB() {

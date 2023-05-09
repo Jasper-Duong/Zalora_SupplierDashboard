@@ -1,23 +1,31 @@
 package services
 
 import (
-	"net/url"
 	"server/db"
 	"server/internal/models"
+	"strconv"
 )
 
-func GetProducts(limit, offset int, params url.Values) ([]models.Products, int64, error) {
-	products := []models.Products{}
-	var total int64 = 0
-	err := db.DB.Model(&models.Products{}).Count(&total).Error
-	if err != nil {
-		return nil, 0, err
-	}
+func GetProducts(query *models.QueryParams) ([]models.Products, int64, error) {
+	return models.SelectProducts(db.DB, query)
+}
 
-	err = db.DB.Limit(limit).Offset(offset).Find(&products).Error
-	if err != nil {
-		return nil, 0, err
-	}
+func CreateProduct(product *models.Products) error {
+	return models.CreateProduct(db.DB, product)
+}
 
-	return products, total, nil
+func UpdateProduct(product *models.Products, id string) error {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+	return models.UpdateProduct(db.DB, product, idInt)
+}
+
+func DeleteProduct(id string) error {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+	return models.DeleteProduct(db.DB, idInt)
 }
