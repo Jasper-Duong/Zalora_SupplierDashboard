@@ -5,5 +5,8 @@ import (
 )
 
 func LoadRoutes(r *gin.Engine) {
-	LoadSuppliersRoute(r.Group("/suppliers"))
+	superGroup := r.Group("/api")
+	{
+		LoadSuppliersRoute(superGroup.Group("/suppliers"))
+	}
 }

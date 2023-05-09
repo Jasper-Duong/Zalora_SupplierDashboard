@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"server/internal/models"
 	"server/internal/services"
@@ -12,33 +11,42 @@ import (
 func GetSuppliersHandler(c *gin.Context) {
 	var query models.QueryParam
 	c.ShouldBindQuery(&query)
-	fmt.Println(query)
-	suppliers, err := services.GetSuppliers(&query)
+	suppliers, total, err := services.GetSuppliers(&query)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, suppliers)
+	res := gin.H{
+		"suppliers": suppliers,
+		"total":     total,
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 func CreateSuppliersHandler(c *gin.Context) {
-	var supplier models.Suppliers
+	supplier := c.MustGet("supplier").(models.Suppliers)
 
-	if err := c.BindJSON(&supplier); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if status, err := services.CreateSupplier(&supplier); err != nil {
+		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
 		return
 	}
-
-	if err := services.CreateSupplier(&supplier); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"supplier": supplier})
+	c.JSON(http.StatusOK, supplier)
 }
 
 func UpdateSuppliers(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "okei",
-	})
+	supplier := c.MustGet("supplier").(models.Suppliers)
+	id := c.Param("id")
+
+	if status, err := services.UpdateSupplier(&supplier, id); err != nil {
+		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "okei"})
+}
+
+func DeleteSuppliers(c *gin.Context) {
+	/*supplier := c.MustGet("supplier").(models.Suppliers)
+	id := c.Param("id")*/
 }
