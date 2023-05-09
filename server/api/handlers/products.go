@@ -30,6 +30,16 @@ func GetProducts(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func GetProductByID(c *gin.Context) {
+	product, err := services.GetProductByID(c.Param("product_id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, product)
+}
+
 func CreateProduct(c *gin.Context) {
 	var product models.Products
 	err := c.ShouldBindJSON(&product)
@@ -52,7 +62,7 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	err = services.UpdateProduct(&product, c.Param("id"))
+	err = services.UpdateProduct(&product, c.Param("product_id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -62,11 +72,22 @@ func UpdateProduct(c *gin.Context) {
 }
 
 func DeleteProduct(c *gin.Context) {
-	err := services.DeleteProduct(c.Param("id"))
+	err := services.DeleteProduct(c.Param("product_id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Product deleted successfully"})
+}
+
+func GetAttributeOfProducts(c *gin.Context) {
+	attribute := c.Param("attribute")
+	products, err := services.GetAttributeOfProducts(attribute)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, products)
 }

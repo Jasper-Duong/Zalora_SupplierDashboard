@@ -3,7 +3,7 @@ package models
 import "gorm.io/gorm"
 
 type Products struct {
-	ID     uint64 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
+	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name"`
 	Brand  string `gorm:"column:brand;not null" json:"brand"`
 	Sku    string `gorm:"column:SKU;not null" json:"sku"`
@@ -41,6 +41,15 @@ func SelectProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) 
 	return products, total, nil
 }
 
+func SelectProductByID(db *gorm.DB, id int) (Products, error) {
+	var product Products
+	err := db.First(&product, id).Error
+	if err != nil {
+		return Products{}, err
+	}
+	return product, nil
+}
+
 func CreateProduct(db *gorm.DB, product *Products) error {
 	return db.Create(product).Error
 }
@@ -51,4 +60,14 @@ func UpdateProduct(db *gorm.DB, product *Products, id int) error {
 
 func DeleteProduct(db *gorm.DB, id int) error {
 	return db.Delete(&Products{}, id).Error
+}
+
+func GetAttributeOfProducts(db *gorm.DB, attribute string) ([]map[string]interface{}, error) {
+	var products []map[string]interface{}
+	// get id and attribute
+	err := db.Model(&Products{}).Select("id", attribute).Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
 }
