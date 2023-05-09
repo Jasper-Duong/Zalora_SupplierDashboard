@@ -12,23 +12,23 @@ type ProductsSuppliers struct {
 }
 
 func SelectProductStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
-	var productStocks []ProductsSuppliers
-	err := db.Where("product_id = ?", id).Find(&productStocks).Error
+	var stocks []ProductsSuppliers
+	err := db.Where("product_id = ?", id).Find(&stocks).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return productStocks, nil
+	return stocks, nil
 }
 
-func CreateProductStock(db *gorm.DB, productStock *ProductsSuppliers) error {
-	return db.Create(productStock).Error
+func CreateStock(db *gorm.DB, Stock *ProductsSuppliers) error {
+	return db.Create(Stock).Error
 }
 
-func UpdateProductStock(db *gorm.DB, product_id uint32, supplier_id uint32, stock uint32) error {
+func UpdateStock(db *gorm.DB, product_id uint32, supplier_id uint32, stock uint32) error {
 	return db.Model(&ProductsSuppliers{}).Where("product_id = ? AND supplier_id = ?", product_id, supplier_id).Update("stock", stock).Error
 }
 
-func DeleteProductStock(db *gorm.DB, product_id uint32, supplier_id uint32) error {
+func DeleteStock(db *gorm.DB, product_id uint32, supplier_id uint32) error {
 	return db.Where("product_id = ? AND supplier_id = ?", product_id, supplier_id).Delete(&ProductsSuppliers{}).Error
 }

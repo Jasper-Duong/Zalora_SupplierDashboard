@@ -18,8 +18,5 @@ func LoadProductsRoute(route *gin.RouterGroup) {
 	curGroup := route.Group("/:product_id")
 	{
 		curGroup.GET("/suppliers", handlers.GetProductStocks)
-		curGroup.POST("/suppliers", handlers.CreateProductStock)
-		curGroup.PUT("/suppliers/:supplier_id", handlers.UpdateProductStock)
-		curGroup.DELETE("/suppliers/:supplier_id", handlers.DeleteProductStock)
 	}
 }
