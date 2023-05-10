@@ -15,7 +15,7 @@ func GetProductStocks(id string) ([]map[string]interface{}, error) {
 	var stockMap []map[string]interface{}
 	for _, stock := range stocks {
 		stockMap = append(stockMap, map[string]interface{}{
-			"id":    stock.SupplierID,
+			"id":    stock.Suppliers,
 			"stock": stock.Stock,
 		})
 	}

@@ -11,5 +11,7 @@ func LoadSuppliersRoute(route *gin.RouterGroup) {
 	route.GET("/", handlers.GetSuppliersHandler)
 	route.POST("/", validations.SupplierValidation, handlers.CreateSuppliersHandler)
 	route.PATCH("/:id", validations.SupplierValidation, handlers.UpdateSuppliers)
-	route.DELETE("/:id", handlers.DeleteSuppliers)
+	route.DELETE("/:id", handlers.DeleteSupplier)
+
+	route.GET("/attribute/name", handlers.GetSuppliersName)
 }

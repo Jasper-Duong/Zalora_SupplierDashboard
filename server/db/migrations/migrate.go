@@ -7,3 +7,7 @@ func MigrateUp(DB *gorm.DB) {
 	MigrateUpProducts(DB)
 	MigrateUpProductsSuppliers(DB)
 }
+
+func MigrationDown(DB *gorm.DB) {
+
+}

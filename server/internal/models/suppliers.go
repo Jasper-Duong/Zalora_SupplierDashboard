@@ -7,7 +7,7 @@ import (
 )
 
 type Suppliers struct {
-	ID            uint32 `gorm:"primary_key" `
+	ID            uint64 `gorm:"primaryKey;autoIncrement" `
 	Name          string `gorm:"not null;unique" json:"name" validate:"required"`
 	Email         string `gorm:"not null;unique" json:"email" validate:"required,email"`
 	ContactNumber string `gorm:"not null" json:"contact_number" validate:"required,e164"`
@@ -26,7 +26,7 @@ func SelectSuppliers(db *gorm.DB, query *QueryParam) ([]Suppliers, int64, error)
 	var suppliers []Suppliers
 
 	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
-	db = db.Where("name IN (?)", query.Name)
+	//db = db.Where("name IN (?)", query.Name)
 	//db = db.Where("email IN (?)", query.Email)
 
 	/*
@@ -72,4 +72,23 @@ func UpdateSupplier(db *gorm.DB, supplier *Suppliers) (int, error) {
 		return 500, err
 	}
 	return 200, nil
+}
+
+func DeleteSupplier(db *gorm.DB, id uint64) (int, error) {
+	if err := db.First(&Suppliers{}, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 404, err
+		}
+		return 500, err
+	}
+	if err := db.Delete(&Suppliers{}, id).Error; err != nil {
+		return 500, err
+	}
+	return 200, nil
+}
+
+func GetSuppliersName(db *gorm.DB) ([]Suppliers, error) {
+	var suppliers []Suppliers
+	err := db.Model(Suppliers{}).Select("id", "name").Find(&suppliers).Error
+	return suppliers, err
 }

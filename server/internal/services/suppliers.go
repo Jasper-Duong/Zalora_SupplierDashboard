@@ -19,6 +19,18 @@ func UpdateSupplier(supplier *models.Suppliers, id string) (int, error) {
 	if err != nil {
 		return 500, err
 	}
-	supplier.ID = uint32(ID)
+	supplier.ID = uint64(ID)
 	return models.UpdateSupplier(db.DB, supplier)
+}
+
+func DeleteSupplier(id string) (int, error) {
+	ID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		return 500, err
+	}
+	return models.DeleteSupplier(db.DB, ID)
+}
+
+func GetSuppliersName() ([]models.Suppliers, error) {
+	return models.GetSuppliersName(db.DB)
 }

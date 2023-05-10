@@ -4,9 +4,11 @@ import "gorm.io/gorm"
 
 // foreign key: product_id
 type ProductsSuppliers struct {
-	ProductID  uint64 `gorm:"column:product_id;primaryKey" json:"product_id"`
-	SupplierID uint64 `gorm:"column:supplier_id;primaryKey" json:"supplier_id"`
-	Stock      uint32 `gorm:"column:stock;not null" json:"stock"`
+	ProductsID  uint64 `gorm:"not null"`
+	SuppliersID uint64 `gorm:"not null"`
+	Stock       uint32 `gorm:"column:stock;not null" json:"stock"`
+	Products    Products
+	Suppliers   Suppliers
 }
 
 func SelectProductStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {

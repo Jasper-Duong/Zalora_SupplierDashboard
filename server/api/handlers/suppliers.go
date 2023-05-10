@@ -46,7 +46,21 @@ func UpdateSuppliers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "okei"})
 }
 
-func DeleteSuppliers(c *gin.Context) {
-	/*supplier := c.MustGet("supplier").(models.Suppliers)
-	id := c.Param("id")*/
+func DeleteSupplier(c *gin.Context) {
+	id := c.Param("id")
+
+	if status, err := services.DeleteSupplier(id); err != nil {
+		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "okei"})
+}
+
+func GetSuppliersName(c *gin.Context) {
+	names, err := services.GetSuppliersName()
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, names)
 }
