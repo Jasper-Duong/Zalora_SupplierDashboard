@@ -1,15 +1,17 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"server/internal/models"
 	"server/internal/services"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func GetSuppliersHandler(c *gin.Context) {
-	var query models.QueryParam
+	var query models.SuppliersQueryParam
 	c.ShouldBindQuery(&query)
 	suppliers, total, err := services.GetSuppliers(&query)
 	if err != nil {
@@ -21,45 +23,63 @@ func GetSuppliersHandler(c *gin.Context) {
 		"suppliers": suppliers,
 		"total":     total,
 	}
-
 	c.JSON(http.StatusOK, res)
 }
 
 func CreateSuppliersHandler(c *gin.Context) {
-	supplier := c.MustGet("supplier").(models.Suppliers)
-
-	if status, err := services.CreateSupplier(&supplier); err != nil {
-		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
+	var supplier models.Suppliers
+	if err := c.ShouldBindJSON(&supplier); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, supplier)
+	if err := services.CreateSupplier(&supplier); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusCreated)
 }
 
 func UpdateSuppliers(c *gin.Context) {
-	supplier := c.MustGet("supplier").(models.Suppliers)
-	id := c.Param("id")
-
-	if status, err := services.UpdateSupplier(&supplier, id); err != nil {
-		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
+	var supplier models.Suppliers
+	if err := c.ShouldBindJSON(&supplier); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "okei"})
+	id := c.Param("id")
+
+	if err := services.UpdateSupplier(&supplier, id); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
 }
 
 func DeleteSupplier(c *gin.Context) {
 	id := c.Param("id")
 
-	if status, err := services.DeleteSupplier(id); err != nil {
-		c.AbortWithStatusJSON(status, gin.H{"error": err.Error()})
+	if err := services.DeleteSupplier(id); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "okei"})
+	c.Status(http.StatusOK)
 }
 
 func GetSuppliersName(c *gin.Context) {
 	names, err := services.GetSuppliersName()
 	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, names)

@@ -26,10 +26,11 @@ func MigrateUpProductsSuppliers(db *gorm.DB) {
 				WHERE
 					id = NEW.product_id;
 			END;
-
+		`)
+	db.Exec(`
 		CREATE TRIGGER remove_stock_trigger
-			AFTER DELETE ON products_suppliers
-			FOR EACH ROW
+		AFTER DELETE ON products_suppliers
+		FOR EACH ROW
 		BEGIN
 			UPDATE
 				suppliers
@@ -44,7 +45,8 @@ func MigrateUpProductsSuppliers(db *gorm.DB) {
 			WHERE
 				id = OLD.product_id;
 		END;
-
+	`)
+	db.Exec(`
 		CREATE TRIGGER update_stock_trigger AFTER UPDATE ON products_suppliers
 		FOR EACH ROW
 		BEGIN

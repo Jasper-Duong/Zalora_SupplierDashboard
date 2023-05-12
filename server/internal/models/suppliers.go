@@ -1,8 +1,6 @@
 package models
 
 import (
-	"errors"
-	"net/http"
 	"reflect"
 	"strings"
 
@@ -11,9 +9,9 @@ import (
 
 type Suppliers struct {
 	ID            uint64 `gorm:"column:id;primaryKey;autoIncrement" `
-	Name          string `gorm:"column:name;not null;unique" json:"name" validate:"required"`
-	Email         string `gorm:"column:email;not null;unique" json:"email" validate:"required,email"`
-	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" validate:"required,e164"`
+	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
+	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
+	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
 	Status        bool   `gorm:"column:status;default:true"`
 	Stock         uint32 `gorm:"column:stock;default:0"`
 }
@@ -23,7 +21,7 @@ type SuppliersInfo struct {
 	Name string `gorm:"column:name"`
 }
 
-type QueryParam struct {
+type SuppliersQueryParam struct {
 	Page           int      `form:"page"`
 	Limit          int      `form:"limit"`
 	Name           []string `form:"name[]"`
@@ -31,14 +29,14 @@ type QueryParam struct {
 	Contact_number []string `form:"contact_number[]"`
 }
 
-func GetSuppliers(db *gorm.DB, query *QueryParam) ([]Suppliers, int64, error) {
+func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, int64, error) {
 	var suppliers []Suppliers
 
 	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
 
 	t := reflect.TypeOf(query).Elem()
 
-	for i := 2; i < t.NumField(); i++ {
+	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		//fieldType := field.Type
 		fieldName := field.Name
@@ -64,38 +62,27 @@ func GetSuppliers(db *gorm.DB, query *QueryParam) ([]Suppliers, int64, error) {
 	return suppliers, total, nil
 }
 
-func CreateSupplier(db *gorm.DB, supplier *Suppliers) (int, error) {
+func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
 	if err := db.Create(&supplier).Error; err != nil {
-		return http.StatusConflict, err
+		return err
 	}
-	return http.StatusOK, nil
+	return nil
 }
 
-func UpdateSupplier(db *gorm.DB, supplier *Suppliers) (int, error) {
-	if err := db.First(&supplier).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return http.StatusNotFound, err
-		}
-		return http.StatusInternalServerError, err
+func UpdateSupplier(db *gorm.DB, supplier *Suppliers) error {
+	tx := db.Updates(&supplier)
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
-
-	if err := db.Updates(&supplier).Error; err != nil {
-		return http.StatusInternalServerError, err
-	}
-	return http.StatusOK, nil
+	return nil
 }
 
-func DeleteSupplier(db *gorm.DB, id uint64) (int, error) {
-	if err := db.First(&Suppliers{}, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return http.StatusNotFound, err
-		}
-		return http.StatusInternalServerError, err
+func DeleteSupplier(db *gorm.DB, id uint64) error {
+	tx := db.Delete(&Suppliers{}, id)
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
-	if err := db.Delete(&Suppliers{}, id).Error; err != nil {
-		return http.StatusInternalServerError, err
-	}
-	return http.StatusOK, nil
+	return nil
 }
 
 func GetSuppliersName(db *gorm.DB) ([]SuppliersInfo, error) {

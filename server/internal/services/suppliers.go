@@ -6,27 +6,27 @@ import (
 	"strconv"
 )
 
-func GetSuppliers(query *models.QueryParam) ([]models.Suppliers, int64, error) {
+func GetSuppliers(query *models.SuppliersQueryParam) ([]models.Suppliers, int64, error) {
 	return models.GetSuppliers(db.DB, query)
 }
 
-func CreateSupplier(supplier *models.Suppliers) (int, error) {
+func CreateSupplier(supplier *models.Suppliers) error {
 	return models.CreateSupplier(db.DB, supplier)
 }
 
-func UpdateSupplier(supplier *models.Suppliers, id string) (int, error) {
+func UpdateSupplier(supplier *models.Suppliers, id string) error {
 	ID, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
-		return 500, err
+		return err
 	}
 	supplier.ID = uint64(ID)
 	return models.UpdateSupplier(db.DB, supplier)
 }
 
-func DeleteSupplier(id string) (int, error) {
+func DeleteSupplier(id string) error {
 	ID, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
-		return 500, err
+		return err
 	}
 	return models.DeleteSupplier(db.DB, ID)
 }
