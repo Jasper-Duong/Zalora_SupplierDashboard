@@ -7,7 +7,7 @@ import (
 )
 
 func GetSuppliers(query *models.QueryParam) ([]models.Suppliers, int64, error) {
-	return models.SelectSuppliers(db.DB, query)
+	return models.GetSuppliers(db.DB, query)
 }
 
 func CreateSupplier(supplier *models.Suppliers) (int, error) {
@@ -31,6 +31,6 @@ func DeleteSupplier(id string) (int, error) {
 	return models.DeleteSupplier(db.DB, ID)
 }
 
-func GetSuppliersName() ([]models.Suppliers, error) {
+func GetSuppliersName() ([]models.SuppliersInfo, error) {
 	return models.GetSuppliersName(db.DB)
 }
