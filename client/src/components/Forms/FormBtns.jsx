@@ -2,10 +2,11 @@ import { Button } from "antd";
 import React from "react";
 import styled from "styled-components";
 
-export default function FormBtns({ closeModal, submitBtnText }) {
+export default function FormBtns({ CancelBtn, submitBtnText }) {
   return (
     <Styled>
-      <Button onClick={closeModal}>Cancel</Button>
+      {CancelBtn}
+      {/* <Button onClick={onCancel}>Cancel</Button> */}
       <Button type="primary" htmlType="submit">
         {submitBtnText}
       </Button>

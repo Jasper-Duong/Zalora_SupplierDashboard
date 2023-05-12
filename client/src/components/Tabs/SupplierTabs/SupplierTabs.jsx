@@ -2,6 +2,8 @@ import { Tabs } from "antd";
 import React from "react";
 import EditSupplierForm from "../../Forms/Supplier/EditSupplierForm";
 import EditAddress from "../../Forms/Supplier/Address/EditAddress";
+import HomeHeader from "../../../layout/HomeLayout/HomeHeader";
+import SupplierStock from "../../SupplierStock/SupplierStock";
 
 export default function SupplierTabs({ closeModal, supplier }) {
   const items = [
@@ -17,6 +19,16 @@ export default function SupplierTabs({ closeModal, supplier }) {
       label: "Addresses",
       children: <EditAddress />,
     },
+    {
+      key: "stock",
+      label: "Stock",
+      children: <SupplierStock />,
+    },
   ];
-  return <Tabs defaultActiveKey="general" items={items} />;
+  return (
+    <>
+      <HomeHeader title={"Supplier Info"} />
+      <Tabs defaultActiveKey="general" items={items} />
+    </>
+  );
 }

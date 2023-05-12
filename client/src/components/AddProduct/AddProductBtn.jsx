@@ -1,9 +1,11 @@
 import { Button } from "antd";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function AddProductBtn({ showModal }) {
+export default function AddProductBtn() {
+  const navigate = useNavigate();
   const handleClick = () => {
-    showModal();
+    navigate("/products/add-product");
   };
   return (
     <Button

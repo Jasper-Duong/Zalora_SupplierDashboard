@@ -1,21 +1,15 @@
 import { Button } from "antd";
-import { products } from "../../mockdata/products";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { setSelectedProduct } from "../../store/actions/products.action";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../constants/routes";
+import { EditOutlined } from "@ant-design/icons";
 
-export default function EditProductBtn({ showModal, data }) {
-  //get selected product info (redux store)
-  const selectedProduct = data;
-  const dispatch = useDispatch();
+export default function EditProductBtn({ data }) {
+  const navigate = useNavigate();
   const handleClick = () => {
-    // dispatch selectedProduct -> redux store
-    dispatch(setSelectedProduct(selectedProduct));
-    showModal();
+    navigate(routes.EDIT_PRODUCT(data.id).path);
   };
   return (
-    <Button type="primary" onClick={handleClick}>
-      Edit Product
-    </Button>
+    <Button type="primary" onClick={handleClick} icon={<EditOutlined />} />
   );
 }

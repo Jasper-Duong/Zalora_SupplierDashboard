@@ -1,17 +1,15 @@
 import { Button } from "antd";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { setSelectedSupplier } from "../../store/actions/suppliers.action";
+import { EditOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../constants/routes";
 
-export default function EditSupplierBtn({ showModal, data }) {
-  const dispatch = useDispatch();
+export default function EditSupplierBtn({ data }) {
+  const navigate = useNavigate();
   const handleClick = () => {
-    dispatch(setSelectedSupplier(data));
-    showModal();
+    navigate(routes.EDIT_SUPPLIER(data.id).path);
   };
   return (
-    <Button onClick={handleClick} type="primary">
-      Edit Supplier
-    </Button>
+    <Button onClick={handleClick} type="primary" icon={<EditOutlined />} />
   );
 }

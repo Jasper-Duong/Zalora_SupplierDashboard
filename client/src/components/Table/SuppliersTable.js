@@ -4,6 +4,7 @@ import ExtendedTable from "./ExtendedTable";
 import AntdModal from "../Modals/AntdModal";
 import EditSupplierBtn from "../EditSupplier/EditSupplierBtn";
 import EditSupplier from "../EditSupplier/EditSupplier";
+import HomeHeader from "../../layout/HomeLayout/HomeHeader";
 
 const SuppliersTable = () => {
   const columns = [
@@ -51,7 +52,10 @@ const SuppliersTable = () => {
   ];
 
   return (
-    <ExtendedTable columns={columns} resource={"suppliers"}></ExtendedTable>
+    <>
+      <HomeHeader title={"Supplier Table"} />
+      <ExtendedTable columns={columns} resource={"suppliers"}></ExtendedTable>
+    </>
   );
 };
 
