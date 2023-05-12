@@ -6,4 +6,5 @@ import (
 
 func LoadRoutes(r *gin.Engine) {
 	LoadSuppliersRoute(r.Group("/suppliers"))
+	LoadAddressesRoute(r.Group("/addresses"))
 }
