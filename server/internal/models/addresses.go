@@ -58,3 +58,9 @@ func DeleteAddress(db *gorm.DB, id int) error {
 	}
 	return tx.Error
 }
+
+func GetAddressesBySupplierID(db *gorm.DB, id uint32) ([]Addresses, error) {
+	var addresses []Addresses
+	err := db.Where("supplier_id = ?", id).Find(&addresses).Error
+	return addresses, err
+}
