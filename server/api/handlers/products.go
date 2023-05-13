@@ -10,8 +10,8 @@ import (
 )
 
 type ProductListResponse struct {
-	TotalCount int64             `json:"total"`
-	Products   []models.Products `json:"products"`
+	TotalCount int64                          `json:"total"`
+	Products   []models.ProductsWithSuppliers `json:"products"`
 }
 
 func GetProducts(c *gin.Context) {
@@ -28,6 +28,16 @@ func GetProducts(c *gin.Context) {
 		Products:   products,
 	}
 	c.JSON(http.StatusOK, response)
+}
+
+func GetProductSuppliers(c *gin.Context) {
+	suppliers, err := services.GetSuppliersByProductID(c.Param("product_id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, suppliers)
 }
 
 func GetProductByID(c *gin.Context) {

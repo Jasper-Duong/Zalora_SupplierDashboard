@@ -17,6 +17,7 @@ func LoadProductsRoute(route *gin.RouterGroup) {
 
 	curGroup := route.Group("/:product_id")
 	{
-		curGroup.GET("/suppliers", handlers.GetProductStocks)
+		curGroup.GET("/stocks", handlers.GetProductStocks)
+		curGroup.GET("/suppliers", handlers.GetProductSuppliers)
 	}
 }

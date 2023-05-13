@@ -13,6 +13,11 @@ type Products struct {
 	Stock  uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
 
+type ProductsWithSuppliers struct {
+	Products
+	Suppliers []map[string]interface{} `json:"suppliers"`
+}
+
 type QueryParams struct {
 	Page   int      `form:"page"`
 	Limit  int      `form:"limit"`
@@ -22,7 +27,19 @@ type QueryParams struct {
 	Status []string `form:"status[]"`
 }
 
-func SelectProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
+func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{}
+	err := db.Model(&Products{}).Select("suppliers.id, suppliers.name").
+		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
+		Joins("left join suppliers on suppliers.id = products_suppliers.supplier_id").
+		Where("products.id = ?", id).Find(&suppliers).Error
+	if err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
+func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
 	var total int64
 	err := db.Model(&Products{}).Count(&total).Error
 	if err != nil {
