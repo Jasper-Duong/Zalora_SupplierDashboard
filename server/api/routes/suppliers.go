@@ -14,4 +14,5 @@ func LoadSuppliersRoute(route *gin.RouterGroup) {
 
 	route.GET("/attribute/name", handlers.GetSuppliersName)
 	route.GET("/:id/stocks", handlers.GetSupplierStocks)
+	route.GET("/:id/addresses", handlers.GetSupplierAddresses)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type Suppliers struct {
-	ID            uint64 `gorm:"column:id;primaryKey;autoIncrement" `
+	ID            uint32 `gorm:"column:id;primaryKey;autoIncrement" `
 	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
 	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
 	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
@@ -60,6 +60,10 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, int64, 
 	}
 
 	return suppliers, total, nil
+}
+
+func GetSupplierByID(db *gorm.DB, ID uint32) error {
+	return db.First(&Suppliers{}, ID).Error
 }
 
 func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {

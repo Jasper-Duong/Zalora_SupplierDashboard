@@ -84,3 +84,14 @@ func GetSuppliersName(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, names)
 }
+
+func GetSupplierAddresses(c *gin.Context) {
+	id := c.Param("id")
+	addresses, err := services.GetSupplierAddresses(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, addresses)
+
+}

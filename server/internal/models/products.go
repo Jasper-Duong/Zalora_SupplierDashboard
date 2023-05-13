@@ -3,7 +3,7 @@ package models
 import "gorm.io/gorm"
 
 type Products struct {
-	ID     uint64 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
+	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name"`
 	Brand  string `gorm:"column:brand;not null" json:"brand"`
 	Sku    string `gorm:"column:SKU;not null" json:"sku"`

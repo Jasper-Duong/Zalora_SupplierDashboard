@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 // foreign key: product_id
 type ProductsSuppliers struct {
-	ProductID  uint64    `gorm:"not null;primaryKey;"`
-	SupplierID uint64    `gorm:"not null;primaryKey;"`
+	ProductID  uint32    `gorm:"not null;primaryKey;"`
+	SupplierID uint32    `gorm:"not null;primaryKey;"`
 	Stock      uint32    `gorm:"column:stock;not null" json:"stock"`
 	Products   Products  `gorm:"foreignKey:ProductID"`
 	Suppliers  Suppliers `gorm:"foreignKey:SupplierID"`
