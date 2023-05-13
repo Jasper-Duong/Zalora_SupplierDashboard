@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/internal/models"
 	"server/internal/services"
+	"server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +13,7 @@ func GetProductStocks(c *gin.Context) {
 	id := c.Param("product_id")
 	stocks, err := services.GetProductStocks(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -21,47 +22,41 @@ func GetProductStocks(c *gin.Context) {
 
 func CreateStock(c *gin.Context) {
 	var stock models.ProductsSuppliers
-	err := c.ShouldBindJSON(&stock)
-	if err != nil {
+	if err := utils.ValidateInput(&stock, c); err != nil {
+		return
+	}
+
+	if err := services.CreateStock(stock); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = services.CreateStock(stock)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Stock created"})
+	c.Status(http.StatusCreated)
 }
 
 func UpdateStock(c *gin.Context) {
 	var stock models.ProductsSuppliers
-	err := c.ShouldBindJSON(&stock)
-	if err != nil {
+
+	if err := utils.ValidateInput(&stock, c); err != nil {
+		return
+	}
+
+	if err := services.UpdateStock(stock); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = services.UpdateStock(stock)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Stock updated"})
+	c.Status(http.StatusOK)
 }
 
 func DeleteStock(c *gin.Context) {
 	product_id := c.Param("product_id")
 	supplier_id := c.Param("supplier_id")
 
-	err := services.DeleteStock(product_id, supplier_id)
-	if err != nil {
+	if err := services.DeleteStock(product_id, supplier_id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Stock deleted"})
+	c.Status(http.StatusOK)
 }

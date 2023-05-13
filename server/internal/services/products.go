@@ -59,6 +59,10 @@ func DeleteProduct(id string) error {
 	if err != nil {
 		return err
 	}
+	err = models.DeleteStockByProductID(db.DB, uint32(idInt))
+	if err != nil {
+		return err
+	}
 	return models.DeleteProduct(db.DB, idInt)
 }
 

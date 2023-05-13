@@ -4,11 +4,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// foreign key: product_id
 type ProductsSuppliers struct {
-	ProductID  uint32 `gorm:"column:product_id;primaryKey" json:"product_id"`
-	SupplierID uint32 `gorm:"column:supplier_id;primaryKey" json:"supplier_id"`
-	Stock      uint32 `gorm:"column:stock;not null" json:"stock"`
+	ProductID  uint32 `gorm:"column:product_id;primaryKey" json:"product_id" binding:"required"`
+	SupplierID uint32 `gorm:"column:supplier_id;primaryKey" json:"supplier_id" binding:"required"`
+	Stock      uint32 `gorm:"column:stock;not null" json:"stock" binding:"required" binding:"required"`
 }
 
 func (current *ProductsSuppliers) AfterCreate(tx *gorm.DB) (err error) {
@@ -120,4 +119,19 @@ func DeleteStock(db *gorm.DB, product_id uint32, supplier_id uint32) error {
 		return err
 	}
 	return db.Where("product_id = ? AND supplier_id = ?", product_id, supplier_id).Delete(&current).Error
+}
+
+func DeleteStockByProductID(db *gorm.DB, product_id uint32) error {
+	stocks := []ProductsSuppliers{}
+	err := db.Where("product_id = ?", product_id).Find(&stocks).Error
+	if err != nil {
+		return err
+	}
+	for _, stock := range stocks {
+		err = db.Where("product_id = ? AND supplier_id = ?", stock.ProductID, stock.SupplierID).Delete(&stock).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
