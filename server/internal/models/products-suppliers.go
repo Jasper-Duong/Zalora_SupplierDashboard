@@ -5,9 +5,11 @@ import (
 )
 
 type ProductsSuppliers struct {
-	ProductID  uint32 `gorm:"column:product_id;primaryKey" json:"product_id" binding:"required"`
-	SupplierID uint32 `gorm:"column:supplier_id;primaryKey" json:"supplier_id" binding:"required"`
-	Stock      uint32 `gorm:"column:stock;not null" json:"stock" binding:"required" binding:"required"`
+	ProductID  uint32 `gorm:"not null;primaryKey;"`
+	SupplierID uint32 `gorm:"not null;primaryKey;"`
+	Stock      uint32 `gorm:"column:stock;not null" json:"stock"`
+	// Products   Products  `gorm:"foreignKey:ProductID"`
+	// Suppliers  Suppliers `gorm:"foreignKey:SupplierID"`
 }
 
 func (current *ProductsSuppliers) AfterCreate(tx *gorm.DB) (err error) {
@@ -134,4 +136,14 @@ func DeleteStockByProductID(db *gorm.DB, product_id uint32) error {
 		}
 	}
 	return nil
+}
+
+func SelectSupplierStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
+	var supplierStocks []ProductsSuppliers
+	err := db.Where("supplier_id = ?", id).Find(&supplierStocks).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return supplierStocks, nil
 }

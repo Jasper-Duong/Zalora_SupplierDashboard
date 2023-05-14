@@ -11,10 +11,6 @@ import (
 
 var DB *gorm.DB
 
-/*func migrateUp() {
-	migrations.MigrateUpSuppliers(DB)
-}*/
-
 func ConnectDB() {
 	var err error
 	dsn := os.Getenv("CONNECTION_URL")

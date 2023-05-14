@@ -23,6 +23,23 @@ func GetProductStocks(id string) ([]map[string]interface{}, error) {
 	return stockMap, err
 }
 
+func GetSupplierStocks(id string) ([]map[string]interface{}, error) {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	stocks, err := models.SelectSupplierStocks(db.DB, idInt)
+	var stockMap []map[string]interface{}
+	for _, stock := range stocks {
+		stockMap = append(stockMap, map[string]interface{}{
+			"id":    stock.ProductID,
+			"stock": stock.Stock,
+		})
+	}
+
+	return stockMap, err
+}
+
 func CreateStock(stock models.ProductsSuppliers) error {
 	return models.CreateStock(db.DB, &stock)
 }

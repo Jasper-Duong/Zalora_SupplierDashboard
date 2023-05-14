@@ -30,8 +30,18 @@ func CreateStock(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.Status(http.StatusCreated)
+}
+
+func GetSupplierStocks(c *gin.Context) {
+	id := c.Param("id")
+	stocks, err := services.GetSupplierStocks(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, stocks)
+
 }
 
 func UpdateStock(c *gin.Context) {
