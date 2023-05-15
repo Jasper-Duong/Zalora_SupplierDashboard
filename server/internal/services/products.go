@@ -39,7 +39,7 @@ func GetProductByID(id string) (models.Products, error) {
 	if err != nil {
 		return models.Products{}, err
 	}
-	return models.SelectProductByID(db.DB, idInt)
+	return models.GetProductByID(db.DB, idInt)
 }
 
 func CreateProduct(product *models.Products) error {
@@ -59,10 +59,10 @@ func DeleteProduct(id string) error {
 	if err != nil {
 		return err
 	}
-	err = models.DeleteStockByProductID(db.DB, uint32(idInt))
+	/*err = models.DeleteStockByProductID(db.DB, uint32(idInt))
 	if err != nil {
 		return err
-	}
+	}*/
 	return models.DeleteProduct(db.DB, idInt)
 }
 

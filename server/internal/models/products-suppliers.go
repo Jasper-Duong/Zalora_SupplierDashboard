@@ -8,8 +8,8 @@ type ProductsSuppliers struct {
 	ProductID  uint32    `gorm:"not null;primaryKey;"`
 	SupplierID uint32    `gorm:"not null;primaryKey;"`
 	Stock      uint32    `gorm:"column:stock;not null" json:"stock"`
-	Products   Products  `gorm:"foreignKey:ProductID"`
-	Suppliers  Suppliers `gorm:"foreignKey:SupplierID"`
+	Products   Products  `gorm:"foreignKey:ProductID; constraint:OnDelete: CASCADE"`
+	Suppliers  Suppliers `gorm:"foreignKey:SupplierID; constraint:OnDelete: CASCADE"`
 }
 
 type StockRequest struct {
@@ -152,4 +152,31 @@ func SelectSupplierStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
 	}
 
 	return supplierStocks, nil
+}
+
+func GetProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var products []map[string]interface{}
+	err := db.Model(&Products{}).Select("products.id, products.name").
+		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
+		Where("products_suppliers.supplier_id = ?", id).Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
+func GetMissingProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var products []map[string]interface{}
+	var err error
+	products, err = GetProductsBySupplierID(db, id)
+	var productIDs []uint32
+	for _, p := range products {
+		productIDs = append(productIDs, p["id"].(uint32))
+	}
+	var missingProducts []map[string]interface{}
+	err = db.Model(&Products{}).Select("id", "name").Not("id IN (?)", productIDs).Find(&missingProducts).Error
+	if err != nil {
+		return make([]map[string]interface{}, 0), err
+	}
+	return missingProducts, nil
 }

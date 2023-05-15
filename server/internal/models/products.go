@@ -54,11 +54,11 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
 	offset := (query.Page - 1) * query.Limit
 	db = db.Limit(query.Limit).Offset(offset)
 
-	q := reflect.TypeOf(query)
+	q := reflect.TypeOf(query).Elem()
 	for i := 0; i < q.NumField(); i++ {
 		field := q.Field(i)
 		name := field.Name
-		value := reflect.ValueOf(query).FieldByName(name)
+		value := reflect.ValueOf(query).Elem().FieldByName(name)
 		if name == "Page" || name == "Limit" {
 			continue
 		}
@@ -75,7 +75,7 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
 	return products, total, nil
 }
 
-func SelectProductByID(db *gorm.DB, id int) (Products, error) {
+func GetProductByID(db *gorm.DB, id int) (Products, error) {
 	var product Products
 	err := db.First(&product, id).Error
 	if err != nil {

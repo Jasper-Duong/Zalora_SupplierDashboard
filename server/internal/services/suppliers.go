@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"server/db"
 	"server/internal/models"
 	"strconv"
@@ -31,8 +32,8 @@ func DeleteSupplier(id string) error {
 	return models.DeleteSupplier(db.DB, ID)
 }
 
-func GetSuppliersName() ([]models.SuppliersInfo, error) {
-	return models.GetSuppliersName(db.DB)
+func GetSuppliersName() ([]map[string]interface{}, error) {
+	return models.GetSuppliersAttribute(db.DB, "name")
 }
 
 func GetSupplierAddresses(id string) ([]models.Addresses, error) {
@@ -45,4 +46,17 @@ func GetSupplierAddresses(id string) ([]models.Addresses, error) {
 		return []models.Addresses{}, err
 	}
 	return models.GetAddressesBySupplierID(db.DB, ID)
+}
+
+func GetSupplierMissingProducts(id string) ([]map[string]interface{}, error) {
+	ID_, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		return make([]map[string]interface{}, 0), err
+	}
+	ID := uint32(ID_)
+	var products []map[string]interface{}
+	if products, err = models.GetMissingProductsBySupplierID(db.DB, ID); err != nil {
+		fmt.Println(products)
+	}
+	return products, nil
 }

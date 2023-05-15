@@ -89,10 +89,10 @@ func DeleteSupplier(db *gorm.DB, id uint64) error {
 	return nil
 }
 
-func GetSuppliersName(db *gorm.DB) ([]SuppliersInfo, error) {
-	var suppliersInfo []SuppliersInfo
-	if err := db.Model(&Suppliers{}).Select("id", "name").Find(&suppliersInfo).Error; err != nil {
-		return []SuppliersInfo{}, err
+func GetSuppliersAttribute(db *gorm.DB, attribute string) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{}
+	if err := db.Model(&Suppliers{}).Select("id", attribute).Find(&suppliers).Error; err != nil {
+		return make([]map[string]interface{}, 0), err
 	}
-	return suppliersInfo, nil
+	return suppliers, nil
 }

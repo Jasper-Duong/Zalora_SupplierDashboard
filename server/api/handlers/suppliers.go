@@ -93,5 +93,10 @@ func GetSupplierAddresses(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, addresses)
+}
 
+func GetSupplierMissingProducts(c *gin.Context) {
+	id := c.Param("id")
+	products, _ := services.GetSupplierMissingProducts(id)
+	c.JSON(http.StatusOK, products)
 }
