@@ -5,11 +5,17 @@ import (
 )
 
 type ProductsSuppliers struct {
-	ProductID  uint32 `gorm:"not null;primaryKey;"`
-	SupplierID uint32 `gorm:"not null;primaryKey;"`
-	Stock      uint32 `gorm:"column:stock;not null" json:"stock"`
-	// Products   Products  `gorm:"foreignKey:ProductID"`
-	// Suppliers  Suppliers `gorm:"foreignKey:SupplierID"`
+	ProductID  uint32    `gorm:"not null;primaryKey;"`
+	SupplierID uint32    `gorm:"not null;primaryKey;"`
+	Stock      uint32    `gorm:"column:stock;not null" json:"stock"`
+	Products   Products  `gorm:"foreignKey:ProductID"`
+	Suppliers  Suppliers `gorm:"foreignKey:SupplierID"`
+}
+
+type StockRequest struct {
+	ProductID  uint32 `json:"product_id" binding:"required"`
+	SupplierID uint32 `json:"supplier_id" binding:"required"`
+	Stock      uint32 `json:"stock" binding:"required"`
 }
 
 func (current *ProductsSuppliers) AfterCreate(tx *gorm.DB) (err error) {
@@ -95,7 +101,7 @@ func SelectProductStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
 }
 
 func CreateStock(db *gorm.DB, Stock *ProductsSuppliers) error {
-	return db.Create(Stock).Error
+	return db.Model(&ProductsSuppliers{}).Create(Stock).Error
 }
 
 func UpdateStock(db *gorm.DB, product_id uint32, supplier_id uint32, stock uint32) error {

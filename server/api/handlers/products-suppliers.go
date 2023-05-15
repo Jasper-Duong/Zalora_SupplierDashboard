@@ -21,7 +21,7 @@ func GetProductStocks(c *gin.Context) {
 }
 
 func CreateStock(c *gin.Context) {
-	var stock models.ProductsSuppliers
+	var stock models.StockRequest
 	if err := utils.ValidateInput(&stock, c); err != nil {
 		return
 	}
@@ -45,7 +45,7 @@ func GetSupplierStocks(c *gin.Context) {
 }
 
 func UpdateStock(c *gin.Context) {
-	var stock models.ProductsSuppliers
+	var stock models.StockRequest
 
 	if err := utils.ValidateInput(&stock, c); err != nil {
 		return

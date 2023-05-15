@@ -40,11 +40,16 @@ func GetSupplierStocks(id string) ([]map[string]interface{}, error) {
 	return stockMap, err
 }
 
-func CreateStock(stock models.ProductsSuppliers) error {
-	return models.CreateStock(db.DB, &stock)
+func CreateStock(stock models.StockRequest) error {
+	product_supplier := &models.ProductsSuppliers{
+		ProductID:  stock.ProductID,
+		SupplierID: stock.SupplierID,
+		Stock:      stock.Stock,
+	}
+	return models.CreateStock(db.DB, product_supplier)
 }
 
-func UpdateStock(stock models.ProductsSuppliers) error {
+func UpdateStock(stock models.StockRequest) error {
 	return models.UpdateStock(db.DB, stock.ProductID, stock.SupplierID, stock.Stock)
 }
 
