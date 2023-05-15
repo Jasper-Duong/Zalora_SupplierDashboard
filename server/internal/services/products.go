@@ -66,6 +66,6 @@ func DeleteProduct(id string) error {
 	return models.DeleteProduct(db.DB, idInt)
 }
 
-func GetAttributeOfProducts(attribute string) ([]map[string]interface{}, error) {
+func GetAttributeOfProducts(attribute string) ([]string, error) {
 	return models.GetAttributeOfProducts(db.DB, attribute)
 }

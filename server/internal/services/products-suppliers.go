@@ -23,6 +23,31 @@ func GetProductStocks(id string) ([]map[string]interface{}, error) {
 	return stockMap, err
 }
 
+func GetProductMissingSuppliers(id string) ([]map[string]interface{}, error) {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+
+	suppliers, err := models.GetSuppliersByProductID(db.DB, uint32(idInt))
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []uint32 = make([]uint32, 0)
+	ids = append(ids, 0)
+	for _, supplier := range suppliers {
+		ids = append(ids, supplier["id"].(uint32))
+	}
+
+	missing, err := models.GetProductMissingSuppliers(db.DB, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return missing, nil
+}
+
 func GetSupplierStocks(id string) ([]map[string]interface{}, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {

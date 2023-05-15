@@ -20,6 +20,17 @@ func GetProductStocks(c *gin.Context) {
 	c.JSON(http.StatusOK, stocks)
 }
 
+func GetProductMissingSuppliers(c *gin.Context) {
+	id := c.Param("product_id")
+	suppliers, err := services.GetProductMissingSuppliers(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, suppliers)
+}
+
 func CreateStock(c *gin.Context) {
 	var stock models.StockRequest
 	if err := utils.ValidateInput(&stock, c); err != nil {

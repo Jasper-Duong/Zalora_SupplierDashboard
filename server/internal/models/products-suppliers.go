@@ -153,3 +153,17 @@ func SelectSupplierStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
 
 	return supplierStocks, nil
 }
+
+func GetProductMissingSuppliers(db *gorm.DB, ids []uint32) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(&Suppliers{}).
+		Select("suppliers.id, suppliers.name").
+		Where("suppliers.id NOT IN (?)", ids).
+		Find(&suppliers).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return suppliers, nil
+}

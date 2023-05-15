@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var a = "aaa"
+
 type Products struct {
 	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name" binding:"required"`
@@ -32,11 +34,13 @@ type QueryParams struct {
 }
 
 func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var suppliers []map[string]interface{}
-	err := db.Model(&Products{}).Select("suppliers.id, suppliers.name").
-		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
-		Joins("left join suppliers on suppliers.id = products_suppliers.supplier_id").
-		Where("products.id = ?", id).Find(&suppliers).Error
+	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(Suppliers{}).
+		Select("suppliers.id, suppliers.name").
+		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
+		Where("products_suppliers.product_id = ?", id).
+		Distinct().
+		Find(&suppliers).Error
 	if err != nil {
 		return nil, err
 	}
@@ -54,11 +58,11 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
 	offset := (query.Page - 1) * query.Limit
 	db = db.Limit(query.Limit).Offset(offset)
 
-	q := reflect.TypeOf(query)
+	q := reflect.TypeOf(query).Elem()
 	for i := 0; i < q.NumField(); i++ {
 		field := q.Field(i)
 		name := field.Name
-		value := reflect.ValueOf(query).FieldByName(name)
+		value := reflect.ValueOf(query).Elem().FieldByName(name)
 		if name == "Page" || name == "Limit" {
 			continue
 		}
@@ -104,11 +108,11 @@ func DeleteProduct(db *gorm.DB, id int) error {
 	return tx.Error
 }
 
-func GetAttributeOfProducts(db *gorm.DB, attribute string) ([]map[string]interface{}, error) {
-	var products []map[string]interface{}
-	err := db.Model(&Products{}).Select("id", attribute).Find(&products).Error
+func GetAttributeOfProducts(db *gorm.DB, attribute string) ([]string, error) {
+	var result []string
+	err := db.Model(&Products{}).Distinct(attribute).Pluck(attribute, &result).Error
 	if err != nil {
 		return nil, err
 	}
-	return products, nil
+	return result, nil
 }
