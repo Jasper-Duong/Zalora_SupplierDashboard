@@ -5,15 +5,17 @@ import { addStockByApi } from "../../services/stock";
 
 export default function AddForm({ setIsAdd, forceRender }) {
   const handleAdd = (values) => {
-    const {name, stock} = values;
-    addStockByApi(1, name, stock);
-    console.log("Adding ", values);
+    const submitData = { stock: values.name2 };
+    setIsAdd(false);
+    addStockByApi(1, 0, submitData);
+    console.log("Adding ", submitData);
     forceRender();
   };
   return (
     <BaseForm
+      isEdit
+      isAdd
       onFinish={handleAdd}
-      isEdit={true}
       ActionBtns={<AddBtns setIsAdd={setIsAdd} />}
     />
   );

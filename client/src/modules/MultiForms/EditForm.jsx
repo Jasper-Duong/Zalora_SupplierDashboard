@@ -8,11 +8,16 @@ export default function EditForm({ item, forceRender }) {
   // getItemById(item.id)
 
   const [isEdit, setIsEdit] = useState(false);
-  const initialValues = { name1: item.name, name2: item.stock };
+  const initialValues = { name0: item.id, name1: item.name, name2: item.stock };
   const handleUpdate = (values) => {
     // PUT API
-    console.log("Updating ", values);
-    updateStockApi(1, item.id, values);
+    const submitData = {
+      id: values.name0,
+      name: values.name1,
+      stock: +values.name2,
+    };
+    console.log("Updating ", submitData);
+    updateStockApi(1, item.id, submitData);
     setIsEdit(false);
     forceRender();
   };

@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 
 export default function BaseForm({
   isEdit,
+  isAdd,
   onFinish,
   initialValues,
   ActionBtns,
@@ -11,21 +12,22 @@ export default function BaseForm({
   const [form] = useForm();
   useEffect(() => {
     form.setFieldsValue(initialValues);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
-  console.log({ initialValues });
   return (
     <Form
       onFinish={onFinish}
       layout="vertical"
       disabled={!isEdit}
       form={form}
-      // initialValues={initialValues}
     >
+      <Form.Item label="Product ID" name={"name0"} hidden>
+        <Input />
+      </Form.Item>
       <Row gutter={16}>
         <Col span={7}>
           <Form.Item label="Label 1" name="name1">
-            <Input />
+            <Input disabled={!isAdd} />
           </Form.Item>
         </Col>
         <Col span={14}>
