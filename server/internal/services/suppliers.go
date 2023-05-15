@@ -7,8 +7,23 @@ import (
 	"strconv"
 )
 
-func GetSuppliers(query *models.SuppliersQueryParam) ([]models.Suppliers, int64, error) {
-	return models.GetSuppliers(db.DB, query)
+func GetSuppliers(query *models.SuppliersQueryParam) ([]models.SupplierWithAddresses, uint32, error) {
+	suppliers, total, err := models.GetSuppliers(db.DB, query)
+	if err != nil {
+		return nil, 0, err
+	}
+	var suppliersWithAddresses []models.SupplierWithAddresses
+	for _, supplier := range suppliers {
+		addresses, err := models.GetAddressesBySupplierID(db.DB, supplier.ID)
+		if err != nil {
+			return nil, 0, err
+		}
+		suppliersWithAddresses = append(suppliersWithAddresses, models.SupplierWithAddresses{
+			Suppliers: supplier,
+			Addresses: addresses,
+		})
+	}
+	return suppliersWithAddresses, total, err
 }
 
 func CreateSupplier(supplier *models.Suppliers) error {

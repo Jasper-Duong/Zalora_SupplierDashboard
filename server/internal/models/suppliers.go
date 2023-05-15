@@ -12,13 +12,18 @@ type Suppliers struct {
 	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
 	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
 	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
-	Status        bool   `gorm:"column:status;default:true"`
-	Stock         uint32 `gorm:"column:stock;default:0"`
+	Status        bool   `gorm:"column:status;default:true" json:"status"`
+	Stock         uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
 
-type SuppliersInfo struct {
+/*type SuppliersInfo struct {
 	ID   uint   `gorm:"column:id"`
 	Name string `gorm:"column:name"`
+}*/
+
+type SupplierWithAddresses struct {
+	Suppliers
+	Addresses []Addresses `json:"addresses"`
 }
 
 type SuppliersQueryParam struct {
@@ -29,7 +34,7 @@ type SuppliersQueryParam struct {
 	Contact_number []string `form:"contact_number[]"`
 }
 
-func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, int64, error) {
+func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32, error) {
 	var suppliers []Suppliers
 
 	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
@@ -54,10 +59,10 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, int64, 
 		return nil, 0, err
 	}
 
-	var total int64
-	if err := db.Model(&Suppliers{}).Count(&total).Error; err != nil {
+	total := uint32(len(suppliers))
+	/*if err := db.Model(&Suppliers{}).Count(&total).Error; err != nil {
 		return nil, 0, err
-	}
+	}*/
 
 	return suppliers, total, nil
 }
