@@ -1,16 +1,17 @@
 import React from "react";
 import ProductForm from "./ProductForm";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
-export default function AddProductForm({ closeModal }) {
+export default function AddProductForm() {
+  const navigate = useNavigate();
   const onFinish = (values) => {
     message.success("Added Product");
-    closeModal();
+    setTimeout(() => navigate("/"), 300);
   };
   return (
     <ProductForm
       onFinish={onFinish}
-      closeModal={closeModal}
       submitBtnText={"Add Product"}
     />
   );

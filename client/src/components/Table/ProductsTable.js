@@ -1,14 +1,10 @@
 import { Button, Space } from "antd";
-import { EditFilled, DeleteFilled } from "@ant-design/icons";
+import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
-import AntdModal from "../Modals/AntdModal";
-import EditProduct from "../EditProduct/EditProduct";
 import EditProductBtn from "../EditProduct/EditProductBtn";
-import { useDispatch } from "react-redux";
-import { setSelectedProduct } from "../../store/actions/products.action";
+import HomeHeader from "../../layout/HomeLayout/HomeHeader";
 
 const ProductsTable = () => {
-  const dispatch = useDispatch();
   const columns = [
     {
       title: "Name",
@@ -95,17 +91,9 @@ const ProductsTable = () => {
       align: "center",
       key: "action",
       render: (_, record) => {
-        // console.log(record);
-        dispatch(setSelectedProduct(record));
         return (
           <Space wrap>
-            <AntdModal
-              ShowModalBtn={EditProductBtn}
-              title="Edit Product"
-              BodyComponent={EditProduct}
-              data={record}
-            />
-
+            <EditProductBtn data={record} />
             <Button type="primary" icon={<DeleteFilled />} danger />
           </Space>
         );
@@ -114,7 +102,10 @@ const ProductsTable = () => {
   ];
 
   return (
-    <ExtendedTable columns={columns} resource={"products"}></ExtendedTable>
+    <>
+      <HomeHeader title={"Product Table"}/>
+      <ExtendedTable columns={columns} resource={"products"}></ExtendedTable>
+    </>
   );
 };
 
