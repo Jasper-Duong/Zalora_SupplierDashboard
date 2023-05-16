@@ -5,7 +5,7 @@ const onSearch = (value) => {
 };
 
 const options = [...Array(10).keys()].map((idx) => ({
-  value: 100 + idx,
+  value: idx,
   label: `New Product ${idx + 1}`,
 }));
 

@@ -9,8 +9,8 @@ export default function AddRowBtn({AddRowComponent}) {
     services: { addItem },
   } = useContext(TableFormContext);
   const [isAdd, setIsAdd] = useState(false);
-  const handleAdd = ({ id, ...data }) => {
-    addItem(id, data);
+  const handleAdd = async ({ id, ...data }) => {
+    await addItem(id, data);
     setIsAdd(false);
     forceRender();
   };

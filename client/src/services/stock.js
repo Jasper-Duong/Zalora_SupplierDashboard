@@ -1,31 +1,50 @@
-let productsStock = [...Array(100).keys()].map((idx) => ({
-  id: idx,
-  name: `Product ${idx + 1}`,
-  stock: (idx + 1) * 10,
-}));
+import { request } from "../config/axios";
+
 function getStockBySupplierIdApi(id) {
-  console.log({ productsStock });
-  return productsStock;
+  return request({method: "GET", url: `/suppliers/${+id}/stocks`})  
 }
 
-function addStockByApi(supplierId, productId, data) {
-  const newId = Date.now();
-  productsStock.push({ id: newId, ...data });
+async function getStockByProductIdApi(id) {
+  return request({ method: "GET", url: `/products/${+id}/stocks` });
 }
 
-function updateStockApi(supplierId, productId, data) {
-  const idx = productsStock.findIndex((item) => item.id === productId);
-  let item = productsStock[idx];
-  productsStock[idx] = { ...item, ...data };
-  return data;
+async function addStockByApi(supplierId, productId, data) {
+  const submitData = {
+    supplier_id: +supplierId,
+    product_id: +productId,
+    stock: data.stock,
+  };
+  console.log("Adding", submitData);
+  return request({
+    method: "POST",
+    url: `/products-suppliers/`,
+    data: submitData,
+  });
 }
 
-function deleteStockApi(supplierId, productId) {
-  productsStock = productsStock.filter((item) => item.id !== productId);
+async function updateStockApi(supplierId, productId, data) {
+  const submitData = {
+    product_id: +productId,
+    supplier_id: +supplierId,
+    stock: data.stock,
+  };
+  return request({
+    method: "PUT",
+    url: `/products-suppliers/`,
+    data: submitData,
+  });
+}
+
+async function deleteStockApi(supplierId, productId) {
+  return request({
+    method: "DELETE",
+    url: `products-suppliers/${productId}/${supplierId}`,
+  });
 }
 
 export {
   getStockBySupplierIdApi,
+  getStockByProductIdApi,
   addStockByApi,
   updateStockApi,
   deleteStockApi,

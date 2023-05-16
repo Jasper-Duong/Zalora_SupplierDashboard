@@ -13,7 +13,7 @@ export default function SaveRowBtn({ key }) {
       const row = await form.validateFields();
       const submitData = { key:editingRow, ...row };
       console.log("Updating", submitData);
-      updateItem(editingRow, submitData);
+      await updateItem(editingRow, submitData);
       message.success("Updated Successfully");
       handleCancel();
       forceRender();

@@ -17,10 +17,10 @@ export default function ActionsBtns({ record }) {
     form.setFieldsValue({ ...record });
     setEditingRow(record.id);
   };
-  const handleDelete = () => {
+  const handleDelete = async () => {
     try {
       console.log("Deleting", record);
-      deleteItem(record.id);
+      await deleteItem(record.id);
       message.success("Deleted Successfully");
       forceRender();
     } catch (error) {
