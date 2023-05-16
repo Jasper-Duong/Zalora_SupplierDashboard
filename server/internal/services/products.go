@@ -4,6 +4,8 @@ import (
 	"server/db"
 	"server/internal/models"
 	"strconv"
+
+	"server/utils"
 )
 
 func GetSuppliersByProductID(id string) ([]map[string]interface{}, error) {
@@ -43,6 +45,7 @@ func GetProductByID(id string) (models.Products, error) {
 }
 
 func CreateProduct(product *models.Products) error {
+	product.Sku = utils.SkuGenerator(product)
 	return models.CreateProduct(db.DB, product)
 }
 

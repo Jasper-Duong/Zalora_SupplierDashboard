@@ -8,7 +8,7 @@ import (
 )
 
 type Suppliers struct {
-	ID            uint32 `gorm:"column:id;primaryKey;autoIncrement" `
+	ID            uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
 	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
 	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
@@ -18,7 +18,7 @@ type Suppliers struct {
 
 type SupplierWithAddresses struct {
 	Suppliers
-	Addresses []Addresses `json:"addresses"`
+	Addresses []map[string]interface{} `json:"addresses"`
 }
 
 type SuppliersQueryParam struct {
@@ -50,20 +50,34 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32,
 		}
 	}
 
-	if err := db.Find(&suppliers).Error; err != nil {
+	var total int64
+	db.Model(&Suppliers{}).Count(&total)
+	offset := (query.Page - 1) * query.Limit
+	db = db.Offset(offset).Limit(query.Limit)
+	err := db.Find(&suppliers).Error
+	if err != nil {
 		return nil, 0, err
 	}
 
-	total := uint32(len(suppliers))
-	/*if err := db.Model(&Suppliers{}).Count(&total).Error; err != nil {
-		return nil, 0, err
-	}*/
-
-	return suppliers, total, nil
+	return suppliers, uint32(total), nil
 }
 
 func GetSupplierByID(db *gorm.DB, ID uint32) error {
 	return db.First(&Suppliers{}, ID).Error
+}
+
+func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(Suppliers{}).
+		Select("suppliers.id, suppliers.name, products_suppliers.stock").
+		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
+		Where("products_suppliers.product_id = ?", id).
+		Distinct().
+		Find(&suppliers).Error
+	if err != nil {
+		return nil, err
+	}
+	return suppliers, nil
 }
 
 func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {

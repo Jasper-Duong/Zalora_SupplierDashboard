@@ -5,10 +5,10 @@ import (
 )
 
 type Addresses struct {
-	ID          uint32    `gorm:"column:id;primaryKey;autoIncrement"`
-	SupplierID  uint32    `gorm:"column:supplier_id;not null"`
-	Type        string    `gorm:"column:type; default:office"`
-	AddressInfo string    `gorm:"column:address_info; not null"`
+	ID          uint32    `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
+	SupplierID  uint32    `gorm:"column:supplier_id;not null" json:"supplier_id"`
+	Type        string    `gorm:"column:type; default:office" json:"type"`
+	AddressInfo string    `gorm:"column:address_info; not null" json:"address_info"`
 	Suppliers   Suppliers `gorm:"foreignKey:SupplierID; constraint:OnDelete: CASCADE"`
 }
 
@@ -59,8 +59,8 @@ func DeleteAddress(db *gorm.DB, id int) error {
 	return tx.Error
 }
 
-func GetAddressesBySupplierID(db *gorm.DB, id uint32) ([]Addresses, error) {
-	var addresses []Addresses
-	err := db.Where("supplier_id = ?", id).Find(&addresses).Error
+func GetAddressesBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var addresses = make([]map[string]interface{}, 0)
+	err := db.Model(Addresses{}).Select("id", "type", "address_info").Where("supplier_id = ?", id).Find(&addresses).Error
 	return addresses, err
 }

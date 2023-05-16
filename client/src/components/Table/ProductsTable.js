@@ -35,8 +35,8 @@ const ProductsTable = () => {
     },
     {
       title: "SKU",
-      dataIndex: "SKU",
-      key: "SKU",
+      dataIndex: "sku",
+      key: "sku",
     },
     {
       title: "Size",

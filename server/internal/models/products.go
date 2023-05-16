@@ -10,7 +10,7 @@ type Products struct {
 	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name" binding:"required"`
 	Brand  string `gorm:"column:brand;not null" json:"brand" binding:"required"`
-	Sku    string `gorm:"column:SKU;not null" json:"sku"`
+	Sku    string `gorm:"column:SKU;not null;unique" json:"sku"`
 	Size   string `gorm:"column:size;not null" json:"size" binding:"required"`
 	Color  string `gorm:"column:color;not null" json:"color" binding:"required"`
 	Status bool   `gorm:"column:status;not null" json:"status" binding:"required"`
@@ -29,20 +29,6 @@ type QueryParams struct {
 	Size   []string `form:"size[]"`
 	Color  []string `form:"color[]"`
 	Status []string `form:"status[]"`
-}
-
-func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
-	err := db.Model(Suppliers{}).
-		Select("suppliers.id, suppliers.name").
-		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
-		Where("products_suppliers.product_id = ?", id).
-		Distinct().
-		Find(&suppliers).Error
-	if err != nil {
-		return nil, err
-	}
-	return suppliers, nil
 }
 
 func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
@@ -69,10 +55,22 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	//total := uint32(len(products))
-	//products = products[query.Page-1 : query.Page-1+query.Limit]
 
 	return products, uint32(total), nil
+}
+
+func GetProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var products []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(&Products{}).
+		Select("products.id, products.name").
+		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
+		Where("products_suppliers.supplier_id = ?", id).
+		Distinct().
+		Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
 }
 
 func GetProductByID(db *gorm.DB, id int) (Products, error) {
