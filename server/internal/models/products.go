@@ -10,7 +10,7 @@ type Products struct {
 	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name" binding:"required"`
 	Brand  string `gorm:"column:brand;not null" json:"brand" binding:"required"`
-	Sku    string `gorm:"column:SKU;not null" json:"sku"`
+	Sku    string `gorm:"column:SKU;not null;unique" json:"sku"`
 	Size   string `gorm:"column:size;not null" json:"size" binding:"required"`
 	Color  string `gorm:"column:color;not null" json:"color" binding:"required"`
 	Status bool   `gorm:"column:status;not null" json:"status" binding:"required"`
