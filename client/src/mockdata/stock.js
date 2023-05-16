@@ -20,7 +20,7 @@ const updateProductStock = (supplierId, productId, data) => {
 
 const deleteProductStock = (supplierId, productId) => {
   const idx = supplierStock.findIndex((item) => item.id === supplierId);
-  if (idx > 0) {
+  if (idx >= 0) {
     supplierStock.splice(idx, 1);
   }
 };
