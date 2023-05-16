@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Table } from 'antd'
-import axios from 'axios'
+import { Table, Tag } from 'antd'
 import qs from 'qs';
+import axios from '../../config/axios'
 
 const ExtendedTable = (props) => {
     const [data, setData] = useState(props.data)
@@ -11,7 +11,7 @@ const ExtendedTable = (props) => {
             pageSizeOptions: ['10', '50', '100'],
             showSizeChanger: true,
             current: 1,
-            pageSize: 50, 
+            pageSize: 10, 
         },
         sorter: []
     });
@@ -44,15 +44,13 @@ const ExtendedTable = (props) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log(tableParams.filters)
-                const res = await axios.get(`https://644f18eaba9f39c6ab5d2217.mockapi.io/${props.resource}?${decodeURIComponent(qs.stringify(getQueryParams(tableParams), { arrayFormat: 'brackets' }))}`)
-                //const res = await axios.get(`http://localhost:4000/products?${qs.stringify(getQueryParams(tableParams), { arrayFormat: 'comma' }).replace(/%2C/g, ',')}`)
-                setData(res.data)
+                const res = await axios.get(`${props.resource}/?${decodeURIComponent(qs.stringify(getQueryParams(tableParams), { arrayFormat: 'brackets' }))}`)
+                setData(res.data[`${props.resource}`])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams.pagination,
-                        total: 200, 
+                        total: res.data.total, 
                     }
                 })
             } catch (err) {
@@ -60,7 +58,6 @@ const ExtendedTable = (props) => {
             }
         }
         fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(tableParams)])
 
     return (
@@ -70,6 +67,17 @@ const ExtendedTable = (props) => {
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowKey = "id"
+            expandable={{
+                expandedRowRender: (record) => (
+                  <Tag
+                    style={{
+                      margin: "auto",
+                    }}
+                  >
+                    {"cuu"}
+                  </Tag>
+                ),
+            }}
         ></Table>
     )
 }

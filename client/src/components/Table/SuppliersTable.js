@@ -1,4 +1,4 @@
-import { Button, Space } from "antd";
+import { Button, Space, Table } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import AntdModal from "../Modals/AntdModal";
@@ -33,6 +33,12 @@ const SuppliersTable = () => {
       sorter: {
         multiple: 1,
       },
+    },
+    Table.EXPAND_COLUMN,
+    {
+      title: "Addresses",
+      dataIndex: "addresses",
+      key: "addresses",
     },
     {
       align: "center",

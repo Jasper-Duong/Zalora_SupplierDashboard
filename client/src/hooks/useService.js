@@ -10,7 +10,7 @@ const useService = ({ service, condition = true, deps = [] }) => {
       const result = await service();
       console.log("Fetch data", result);
       setLoadingState(false);
-      setData(result);
+      setData(result.data);
     } catch (error) {
       console.log(error);
     }

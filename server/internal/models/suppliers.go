@@ -1,0 +1,98 @@
+package models
+
+import (
+	"reflect"
+	"strings"
+
+	"gorm.io/gorm"
+)
+
+type Suppliers struct {
+	ID            uint32 `gorm:"column:id;primaryKey;autoIncrement" `
+	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
+	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
+	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
+	Status        bool   `gorm:"column:status;default:true" json:"status"`
+	Stock         uint32 `gorm:"column:stock;default:0" json:"stock"`
+}
+
+type SupplierWithAddresses struct {
+	Suppliers
+	Addresses []Addresses `json:"addresses"`
+}
+
+type SuppliersQueryParam struct {
+	Page           int      `form:"page"`
+	Limit          int      `form:"limit"`
+	Name           []string `form:"name[]"`
+	Email          []string `form:"email[]"`
+	Contact_number []string `form:"contact_number[]"`
+}
+
+func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32, error) {
+	var suppliers []Suppliers
+
+	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
+
+	t := reflect.TypeOf(query).Elem()
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		//fieldType := field.Type
+		fieldName := field.Name
+		fieldValue := reflect.ValueOf(query).Elem().Field(i)
+
+		if fieldValue.Kind() == reflect.Slice {
+			length := fieldValue.Len()
+			if length > 0 {
+				db = db.Where(strings.ToLower(fieldName)+" IN ?", fieldValue.Interface())
+			}
+		}
+	}
+
+	if err := db.Find(&suppliers).Error; err != nil {
+		return nil, 0, err
+	}
+
+	total := uint32(len(suppliers))
+	/*if err := db.Model(&Suppliers{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}*/
+
+	return suppliers, total, nil
+}
+
+func GetSupplierByID(db *gorm.DB, ID uint32) error {
+	return db.First(&Suppliers{}, ID).Error
+}
+
+func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
+	if err := db.Create(&supplier).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateSupplier(db *gorm.DB, supplier *Suppliers) error {
+	tx := db.Updates(&supplier)
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+
+func DeleteSupplier(db *gorm.DB, id uint64) error {
+	tx := db.Delete(&Suppliers{}, id)
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+
+func GetSuppliersAttribute(db *gorm.DB, attribute string) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{}
+	if err := db.Model(&Suppliers{}).Select("id", attribute).Find(&suppliers).Error; err != nil {
+		return make([]map[string]interface{}, 0), err
+	}
+	return suppliers, nil
+}

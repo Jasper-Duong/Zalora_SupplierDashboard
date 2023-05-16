@@ -1,17 +1,24 @@
 import { Form, Input, InputNumber, Select, Switch } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import FormBtns from "../FormBtns";
 import { supplierOptions } from "../../../mockdata/suppliers";
 import ProductFormCancelBtn from "./ProductFormCancelBtn";
 import FormContainer from "../../Container/FormContainer";
+import { useForm } from "antd/es/form/Form";
 
 export default function ProductForm({ product, onFinish, submitBtnText }) {
+  console.log(product)
+  const [form] = useForm()
+  useEffect(() => {
+    form.setFieldsValue({ ...product })
+  }, [product])
   return (
     <FormContainer>
       <Form
         onFinish={onFinish}
         layout="vertical"
-        initialValues={product ? { ...product } : {}}
+        form={form}
+        // initialValues={product}
         labelAlign="left"
       >
         <Form.Item
@@ -33,7 +40,7 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
           name="stock"
           rules={[{ required: true, message: "Product Stock is required" }]}
         >
-          <InputNumber min={0} />
+          <InputNumber min={0} disabled={product?true:false}/>
         </Form.Item>
         <Form.Item
           label="Color"
@@ -52,7 +59,7 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
         <Form.Item label="Status" name="status" valuePropName="checked">
           <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           label="Suppliers"
           name="suppliers"
           rules={[
@@ -64,7 +71,7 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
           ]}
         >
           <Select mode="multiple" options={supplierOptions} />
-        </Form.Item>
+        </Form.Item> */}
         <FormBtns
           CancelBtn={<ProductFormCancelBtn />}
           submitBtnText={submitBtnText}
