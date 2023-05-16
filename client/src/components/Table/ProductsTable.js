@@ -8,13 +8,32 @@ import { useState } from 'react'
 import { getFilterOptions } from "../../services/filter";
 const ProductsTable = () => {
   const [filterOptions, setFilterOptions] = useState([]);
+  const [filterValues, setFilterValues] = useState({});
 
-  const handleFilterDropdownOpenChange = async (visible, attribute) => {
+  const handleFilterDropdownOpenChange = async (visible, api) => {
     if (visible) {
-      const options = await getFilterOptions(`products/attribute/${attribute}`);
-      setFilterOptions(options.data);
+      const options = await getFilterOptions(`${api}`);
+      let filters = options.data
+      filters = filters.reduce((accumulator, filter) => (
+        [...accumulator, {
+          "text": filter.name,
+          "value": filter.name,
+        }]
+      ), [])
+      setFilterOptions(filters);
+    } else {
+      setFilterOptions([])
     }
   }
+
+  const handleFilter = (value) => {
+    console.log("help")
+    /*setFilterValues(prevValues => ({
+      ...prevValues,
+      ["brand"]: [...(prevValues["brand"] || []), value],
+    }));*/
+    // return true or false to indicate whether the record should be included in the filtered result
+  };
 
   const columns = [
     {
@@ -31,7 +50,9 @@ const ProductsTable = () => {
       key: "brand",
       filters: filterOptions,
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "brand"),
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/brand"),
+      //filteredValue: filterValues.brand || null,
+      //onFilter: handleFilter,
     },
     {
       title: "SKU",
@@ -50,9 +71,11 @@ const ProductsTable = () => {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: filterOptions,
+      filters: [
+        {text: "white", value: "white"}
+      ],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "color"),
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color"),
     },
     {
       title: "Suppliers",
@@ -60,16 +83,8 @@ const ProductsTable = () => {
       key: "suppliers",
       filters: filterOptions,
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "color"),
-      render: (suppliers) => {
-        return (
-          <>
-            {suppliers.map((supplier) => (
-              <p key={supplier}>{supplier.name}</p>
-            ))}
-          </>
-        );
-      },
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name"),
+      render: (suppliers) => suppliers.length
     },
     Table.EXPAND_COLUMN,
     /*
@@ -106,7 +121,6 @@ const ProductsTable = () => {
       },
     },
   ];
-
   return (
     <>
       <HomeHeader title={"Product Table"}/>

@@ -77,8 +77,7 @@ func GetAttributeOfProducts(attribute string) ([]map[string]interface{}, error) 
 	var attributeList []map[string]interface{}
 	for _, value := range values {
 		attributeList = append(attributeList, map[string]interface{}{
-			"text":  value,
-			"value": value,
+			"name": value,
 		})
 	}
 	return attributeList, nil

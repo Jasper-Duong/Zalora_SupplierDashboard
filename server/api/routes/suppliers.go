@@ -9,6 +9,8 @@ import (
 func LoadSuppliersRoute(route *gin.RouterGroup) {
 	route.GET("/", handlers.GetSuppliersHandler)
 	route.POST("/", handlers.CreateSuppliersHandler)
+
+	route.GET("/:id", handlers.GetSupplierByID)
 	route.PUT("/:id", handlers.UpdateSuppliers)
 	route.DELETE("/:id", handlers.DeleteSupplier)
 

@@ -35,11 +35,16 @@ const SuppliersTable = () => {
       },
     },
     Table.EXPAND_COLUMN,
-    {/*
+    {
       title: "Addresses",
       dataIndex: "addresses",
       key: "addresses",
-  */},
+      render: (addresses) => {
+        return (
+          <p>{addresses.length}</p>
+        )
+      }
+    },
     {
       align: "center",
       key: "action",

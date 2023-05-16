@@ -85,6 +85,16 @@ func GetSuppliersName(c *gin.Context) {
 	c.JSON(http.StatusOK, names)
 }
 
+func GetSupplierByID(c *gin.Context) {
+	id := c.Param("id")
+	supplier, err := services.GetSupplierByID(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, supplier)
+}
+
 func GetSupplierAddresses(c *gin.Context) {
 	id := c.Param("id")
 	addresses, err := services.GetSupplierAddresses(id)

@@ -41,12 +41,11 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32,
 		//fieldType := field.Type
 		fieldName := field.Name
 		fieldValue := reflect.ValueOf(query).Elem().Field(i)
-
-		if fieldValue.Kind() == reflect.Slice {
-			length := fieldValue.Len()
-			if length > 0 {
-				db = db.Where(strings.ToLower(fieldName)+" IN ?", fieldValue.Interface())
-			}
+		if fieldName == "Page" || fieldName == "Limit" {
+			continue
+		}
+		if fieldValue.Len() > 0 {
+			db = db.Where(strings.ToLower(fieldName)+" IN ?", fieldValue.Interface())
 		}
 	}
 
@@ -62,8 +61,10 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32,
 	return suppliers, uint32(total), nil
 }
 
-func GetSupplierByID(db *gorm.DB, ID uint32) error {
-	return db.First(&Suppliers{}, ID).Error
+func GetSupplierByID(db *gorm.DB, ID uint32) (Suppliers, error) {
+	var supplier Suppliers
+	err := db.First(&supplier, ID).Error
+	return supplier, err
 }
 
 func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {

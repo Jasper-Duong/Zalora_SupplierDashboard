@@ -3,6 +3,24 @@ import { Table, Tag } from 'antd'
 import qs from 'qs';
 import axios from '../../config/axios'
 
+const ExpandedAddresses = (record) => (
+    record.addresses.map(address => (
+        <p key={address.id}>{address.address_info}</p>
+    ))
+)
+
+const ExpandedSuppliers = (record) => (
+    record.suppliers.map(supplier => (
+        <Tag key={supplier.id}>{supplier.name} : {supplier.stock}</Tag>
+    ))
+)
+
+const isRowExpandable = (record, resource) => (
+    (resource === 'products' && record.suppliers.length > 0) || (resource === 'suppliers' && record.addresses.length > 0) ? true : false
+)
+
+var oldFilters = {}
+
 const ExtendedTable = (props) => {
     const [data, setData] = useState(props.data)
     const [tableParams, setTableParams] = useState({
@@ -34,12 +52,21 @@ const ExtendedTable = (props) => {
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
+        let newFilters = {}
+        Object.keys(filters).forEach(key => {
+            console.log(key, filters[key])
+            newFilters[key] = filters[key] ? filters[key] : oldFilters[key]
+        });
+        oldFilters = {...newFilters}
+        filters = {...newFilters}
+        console.log(newFilters)
         setTableParams({
             pagination,
             filters,
             sorter: Array.isArray(sorter) ?  sorter : [sorter]
         })
     }
+
 
     useEffect(() => {
         async function fetchData() {
@@ -68,15 +95,8 @@ const ExtendedTable = (props) => {
             onChange={handleTableChange}
             rowKey = "id"
             expandable={{
-                expandedRowRender: (record) => (
-                  <Tag
-                    style={{
-                      margin: "auto",
-                    }}
-                  >
-                    {"cuu"}
-                  </Tag>
-                ),
+                expandedRowRender: props.resource === 'products' ? ExpandedSuppliers : ExpandedAddresses,
+                rowExpandable: (record) => isRowExpandable(record, props.resource)
             }}
         ></Table>
     )
