@@ -1,53 +1,36 @@
-import { Button, Col, Form, InputNumber, Popconfirm, Row } from "antd";
-import React, { useState } from "react";
+import { Button, Popconfirm } from "antd";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import TableFormSelect from "../Input/TableFormSelect";
-import { addStockByApi } from "../../../services/stock";
-import { useForm } from "antd/es/form/Form";
+import { TableFormContext } from "../../../contexts/TableFormContext";
 
-export default function AddRowBtn({ forceRender }) {
+export default function AddRowBtn({AddRowComponent}) {
+  const {
+    forceRender,
+    services: { addItem },
+  } = useContext(TableFormContext);
   const [isAdd, setIsAdd] = useState(false);
-  const [form] = useForm();
-  const handleAdd = (values) => {
-    addStockByApi(1, values.id, { name: values.name, stock: values.stock });
+  const handleAdd = ({ id, ...data }) => {
+    addItem(id, data);
     setIsAdd(false);
     forceRender();
   };
+  const AddConfirmBtn = () => (
+    <div className="add-btn-confirm">
+      <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
+        Add
+      </Button>
+      <Popconfirm title="Sure to cancel?" onConfirm={() => setIsAdd(false)}>
+        <a>Cancel</a>
+      </Popconfirm>
+    </div>
+  );
   return (
     <Styled isAdd={isAdd}>
       {isAdd ? (
-        <Form onFinish={handleAdd} form={form}>
-          <Form.Item hidden name={"id"} />
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name={"name"} label="Product Name">
-                <TableFormSelect form={form} />
-              </Form.Item>
-            </Col>
-            <Col span={7}>
-              <Form.Item name={"stock"} label="Stock">
-                <InputNumber />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <div className="add-btn-confirm">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: 8 }}
-                >
-                  Add
-                </Button>
-                <Popconfirm
-                  title="Sure to cancel?"
-                  onConfirm={() => setIsAdd(false)}
-                >
-                  <a>Cancel</a>
-                </Popconfirm>
-              </div>
-            </Col>
-          </Row>
-        </Form>
+        <AddRowComponent
+          onFinish={handleAdd}
+          AddConfirmBtn={AddConfirmBtn}
+        />
       ) : (
         <Button
           className="add-new-btn"

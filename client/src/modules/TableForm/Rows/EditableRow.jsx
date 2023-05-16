@@ -1,7 +1,4 @@
-import { Form, InputNumber } from "antd";
-import TableFormSelect from "../Input/TableFormSelect";
-import { useContext } from "react";
-import { TableFormContext } from "../../../contexts/TableFormContext";
+import { Form} from "antd";
 
 export default function EditableCell({
   editing,
@@ -11,11 +8,9 @@ export default function EditableCell({
   record,
   index,
   children,
+  inputNode,
   ...restProps
 }) {
-  const { form } = useContext(TableFormContext);
-  const inputNode =
-    inputType === "number" ? <InputNumber /> : <TableFormSelect form={form} />;
   return (
     <td {...restProps}>
       {editing ? (

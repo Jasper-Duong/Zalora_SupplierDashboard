@@ -1,20 +1,23 @@
-import TableFormActions from "../Cell/TableFormActions";
+import React from "react";
+import TableFormActions from "../../modules/TableForm/Cell/TableFormActions";
 
-export default function TableFormColumns(editingRow) {
+const inputTypeMap = { type: "select", address_info: "input" };
+
+export default function AddressesColumns(editingRow) {
   const columns = [
     {
-      title: "Product Name",
-      dataIndex: "name",
-      width: "45%",
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      width: "25%",
       editable: false,
-      key: "name",
     },
     {
-      title: "Stock",
-      dataIndex: "stock",
-      width: "25%",
+      title: "Address Info",
+      dataIndex: "address_info",
+      key: "address_info",
+      width: "45%",
       editable: true,
-      key: "stock",
     },
     {
       title: "Actions",
@@ -38,5 +41,3 @@ export default function TableFormColumns(editingRow) {
       : col
   );
 }
-
-const inputTypeMap = { stock: "number", name: "select" };
