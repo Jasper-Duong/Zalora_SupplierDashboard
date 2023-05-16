@@ -18,7 +18,7 @@ type Suppliers struct {
 
 type SupplierWithAddresses struct {
 	Suppliers
-	Addresses []Addresses `json:"addresses"`
+	Addresses []map[string]interface{} `json:"addresses"`
 }
 
 type SuppliersQueryParam struct {
@@ -50,16 +50,16 @@ func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32,
 		}
 	}
 
-	if err := db.Find(&suppliers).Error; err != nil {
+	var total int64
+	db.Model(&Suppliers{}).Count(&total)
+	offset := (query.Page - 1) * query.Limit
+	db = db.Offset(offset).Limit(query.Limit)
+	err := db.Find(&suppliers).Error
+	if err != nil {
 		return nil, 0, err
 	}
 
-	total := uint32(len(suppliers))
-	/*if err := db.Model(&Suppliers{}).Count(&total).Error; err != nil {
-		return nil, 0, err
-	}*/
-
-	return suppliers, total, nil
+	return suppliers, uint32(total), nil
 }
 
 func GetSupplierByID(db *gorm.DB, ID uint32) error {

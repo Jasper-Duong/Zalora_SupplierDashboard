@@ -35,11 +35,11 @@ const SuppliersTable = () => {
       },
     },
     Table.EXPAND_COLUMN,
-    {
+    {/*
       title: "Addresses",
       dataIndex: "addresses",
       key: "addresses",
-    },
+  */},
     {
       align: "center",
       key: "action",

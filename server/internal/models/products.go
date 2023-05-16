@@ -55,8 +55,6 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	//total := uint32(len(products))
-	//products = products[query.Page-1 : query.Page-1+query.Limit]
 
 	return products, uint32(total), nil
 }

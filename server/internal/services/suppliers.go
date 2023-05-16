@@ -51,14 +51,14 @@ func GetSuppliersName() ([]map[string]interface{}, error) {
 	return models.GetSuppliersAttribute(db.DB, "name")
 }
 
-func GetSupplierAddresses(id string) ([]models.Addresses, error) {
+func GetSupplierAddresses(id string) ([]map[string]interface{}, error) {
 	ID_, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
-		return []models.Addresses{}, err
+		return make([]map[string]interface{}, 0), err
 	}
 	ID := uint32(ID_)
 	if err = models.GetSupplierByID(db.DB, ID); err != nil {
-		return []models.Addresses{}, err
+		return make([]map[string]interface{}, 0), err
 	}
 	return models.GetAddressesBySupplierID(db.DB, ID)
 }
