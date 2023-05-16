@@ -31,20 +31,6 @@ type QueryParams struct {
 	Status []string `form:"status[]"`
 }
 
-func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
-	err := db.Model(Suppliers{}).
-		Select("suppliers.id, suppliers.name").
-		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
-		Where("products_suppliers.product_id = ?", id).
-		Distinct().
-		Find(&suppliers).Error
-	if err != nil {
-		return nil, err
-	}
-	return suppliers, nil
-}
-
 func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
 	var products []Products
 
@@ -73,6 +59,20 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
 	//products = products[query.Page-1 : query.Page-1+query.Limit]
 
 	return products, uint32(total), nil
+}
+
+func GetProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var products []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(&Products{}).
+		Select("products.id, products.name").
+		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
+		Where("products_suppliers.supplier_id = ?", id).
+		Distinct().
+		Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
 }
 
 func GetProductByID(db *gorm.DB, id int) (Products, error) {

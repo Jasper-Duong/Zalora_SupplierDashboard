@@ -90,16 +90,6 @@ func (current *ProductsSuppliers) AfterDelete(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func SelectProductStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
-	var stocks []ProductsSuppliers
-	err := db.Where("product_id = ?", id).Find(&stocks).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return stocks, nil
-}
-
 func CreateStock(db *gorm.DB, Stock *ProductsSuppliers) error {
 	return db.Model(&ProductsSuppliers{}).Create(Stock).Error
 }
@@ -142,27 +132,6 @@ func DeleteStockByProductID(db *gorm.DB, product_id uint32) error {
 		}
 	}
 	return nil
-}
-
-func SelectSupplierStocks(db *gorm.DB, id int) ([]ProductsSuppliers, error) {
-	var supplierStocks []ProductsSuppliers
-	err := db.Where("supplier_id = ?", id).Find(&supplierStocks).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return supplierStocks, nil
-}
-
-func GetProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var products []map[string]interface{}
-	err := db.Model(&Products{}).Select("products.id, products.name").
-		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
-		Where("products_suppliers.supplier_id = ?", id).Find(&products).Error
-	if err != nil {
-		return nil, err
-	}
-	return products, nil
 }
 
 func GetMissingProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {

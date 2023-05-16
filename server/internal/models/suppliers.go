@@ -66,6 +66,20 @@ func GetSupplierByID(db *gorm.DB, ID uint32) error {
 	return db.First(&Suppliers{}, ID).Error
 }
 
+func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
+	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(Suppliers{}).
+		Select("suppliers.id, suppliers.name, products_suppliers.stock").
+		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
+		Where("products_suppliers.product_id = ?", id).
+		Distinct().
+		Find(&suppliers).Error
+	if err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
 func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
 	if err := db.Create(&supplier).Error; err != nil {
 		return err

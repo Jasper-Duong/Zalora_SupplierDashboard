@@ -7,20 +7,12 @@ import (
 )
 
 func GetProductStocks(id string) ([]map[string]interface{}, error) {
-	idInt, err := strconv.Atoi(id)
+	idInt, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
 		return nil, err
 	}
-	stocks, err := models.SelectProductStocks(db.DB, idInt)
-	var stockMap []map[string]interface{}
-	for _, stock := range stocks {
-		stockMap = append(stockMap, map[string]interface{}{
-			"id":    stock.SupplierID,
-			"stock": stock.Stock,
-		})
-	}
-
-	return stockMap, err
+	stocks, err := models.GetSuppliersByProductID(db.DB, uint32(idInt))
+	return stocks, err
 }
 
 func GetProductMissingSuppliers(id string) ([]map[string]interface{}, error) {
@@ -49,20 +41,12 @@ func GetProductMissingSuppliers(id string) ([]map[string]interface{}, error) {
 }
 
 func GetSupplierStocks(id string) ([]map[string]interface{}, error) {
-	idInt, err := strconv.Atoi(id)
+	idInt, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
 		return nil, err
 	}
-	stocks, err := models.SelectSupplierStocks(db.DB, idInt)
-	var stockMap []map[string]interface{}
-	for _, stock := range stocks {
-		stockMap = append(stockMap, map[string]interface{}{
-			"id":    stock.ProductID,
-			"stock": stock.Stock,
-		})
-	}
-
-	return stockMap, err
+	stocks, err := models.GetSuppliersByProductID(db.DB, uint32(idInt))
+	return stocks, err
 }
 
 func CreateStock(stock models.StockRequest) error {
