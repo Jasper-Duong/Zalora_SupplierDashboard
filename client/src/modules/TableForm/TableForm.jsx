@@ -3,43 +3,42 @@ import { useState } from "react";
 import useService from "../../hooks/useService";
 import AddRowBtn from "./Actions/AddRowBtn";
 import { TableFormContext } from "../../contexts/TableFormContext";
-import TableFormColumns from "./Columns/TableFormColumns";
-import EditableCell from "./Rows/EditableRow";
 
-const TableForm = ({ service }) => {
+const TableForm = ({ services, columns, Cell, AddRowComponent }) => {
   const [form] = Form.useForm();
   const [isForceRender, setIsForceRender] = useState(false);
   const forceRender = () => setIsForceRender((prev) => !prev);
 
   const { data } = useService({
-    service,
+    service: services.getData,
     deps: [isForceRender],
   });
-  const [editingKey, setEditingKey] = useState("");
+  const [editingRow, setEditingRow] = useState("");
 
   return (
     <TableFormContext.Provider
       value={{
         forceRender,
         form,
-        editingKey,
-        setEditingKey,
+        editingRow,
+        setEditingRow,
+        services,
       }}
     >
-      <AddRowBtn forceRender={forceRender} />
+      <AddRowBtn AddRowComponent={AddRowComponent} />
       <Form form={form} component={false}>
         <Table
           components={{
             body: {
-              cell: EditableCell,
+              cell: Cell,
             },
           }}
           bordered
           dataSource={data && [...data]}
-          columns={TableFormColumns(editingKey)}
+          columns={columns(editingRow)}
           rowClassName="editable-row"
           pagination={{
-            onChange: () => setEditingKey(""),
+            onChange: () => setEditingRow(""),
           }}
         />
       </Form>

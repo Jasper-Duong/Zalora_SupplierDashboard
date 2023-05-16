@@ -4,6 +4,7 @@ import EditSupplierForm from "../../Forms/Supplier/EditSupplierForm";
 import EditAddress from "../../Forms/Supplier/Address/EditAddress";
 import HomeHeader from "../../../layout/HomeLayout/HomeHeader";
 import SupplierStock from "../../SupplierStock/SupplierStock";
+import SupplierAddresses from "./SupplierAddresses";
 
 export default function SupplierTabs({ closeModal, supplier }) {
   const items = [
@@ -17,7 +18,8 @@ export default function SupplierTabs({ closeModal, supplier }) {
     {
       key: "addresses",
       label: "Addresses",
-      children: <EditAddress />,
+      // children: <EditAddress />,
+      children: <SupplierAddresses />,
     },
     {
       key: "stock",
@@ -28,7 +30,7 @@ export default function SupplierTabs({ closeModal, supplier }) {
   return (
     <>
       <HomeHeader title={"Supplier Info"} />
-      <Tabs defaultActiveKey="general" items={items} />
+      <Tabs destroyInactiveTabPane defaultActiveKey="general" items={items} />
     </>
   );
 }

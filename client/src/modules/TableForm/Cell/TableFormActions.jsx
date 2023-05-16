@@ -4,8 +4,8 @@ import SaveRowBtn from "../Actions/SaveRowBtn";
 import ActionsBtns from "../Actions/ActionsBtns";
 
 export default function TableFormActions({ record }) {
-  const { editingKey } = useContext(TableFormContext);
-  return editingKey === record.key ? (
+  const { editingRow } = useContext(TableFormContext);
+  return editingRow === record.id ? (
     <SaveRowBtn />
   ) : (
     <ActionsBtns record={record} />

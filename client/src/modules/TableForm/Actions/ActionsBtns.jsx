@@ -3,21 +3,25 @@ import styled from "styled-components";
 import EditRowBtn from "./EditRowBtn";
 import DeleteRowBtn from "./DeleteRowBtn";
 import { TableFormContext } from "../../../contexts/TableFormContext";
-import { deleteStockApi } from "../../../services/stock";
 import { message } from "antd";
 
 export default function ActionsBtns({ record }) {
-  const { form, forceRender, setEditingKey, editingKey } =
-    useContext(TableFormContext);
+  const {
+    form,
+    forceRender,
+    setEditingRow,
+    editingRow,
+    services: { deleteItem },
+  } = useContext(TableFormContext);
   const handleEdit = () => {
     form.setFieldsValue({ ...record });
-    setEditingKey(record.key);
+    setEditingRow(record.id);
   };
   const handleDelete = () => {
     try {
       console.log("Deleting", record);
-      deleteStockApi(1, record.key);
-      message.success("Deleted Stock");
+      deleteItem(record.id);
+      message.success("Deleted Successfully");
       forceRender();
     } catch (error) {
       console.log("Failed to delete");
@@ -25,12 +29,8 @@ export default function ActionsBtns({ record }) {
   };
   return (
     <Styled>
-      <EditRowBtn
-        editingKey={editingKey}
-        handleEdit={handleEdit}
-        record={record}
-      />
-      <DeleteRowBtn handleDelete={handleDelete} key={record.key} />
+      <EditRowBtn editingRow={editingRow} handleEdit={handleEdit} />
+      <DeleteRowBtn handleDelete={handleDelete} />
     </Styled>
   );
 }

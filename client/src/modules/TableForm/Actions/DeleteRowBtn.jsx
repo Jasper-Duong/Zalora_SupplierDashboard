@@ -2,13 +2,13 @@ import { Popconfirm } from "antd";
 import React from "react";
 import styled from "styled-components";
 
-export default function DeleteRowBtn({ handleDelete, key }) {
+export default function DeleteRowBtn({ handleDelete }) {
   return (
     <Styled>
       <Popconfirm
         className="delete-btn"
         title="Sure to delete?"
-        onConfirm={() => handleDelete(key)}
+        onConfirm={handleDelete}
       >
         Delete
       </Popconfirm>

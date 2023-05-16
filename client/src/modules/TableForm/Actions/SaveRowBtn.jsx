@@ -2,20 +2,19 @@ import { Popconfirm, Typography, message } from "antd";
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { TableFormContext } from "../../../contexts/TableFormContext";
-import { updateStockApi } from "../../../services/stock";
 
 export default function SaveRowBtn({ key }) {
-  const { setEditingKey, form, forceRender, editingKey } = useContext(TableFormContext);
+  const { setEditingRow, form, forceRender, editingRow, services:{updateItem} } = useContext(TableFormContext);
   const handleCancel = () => {
-    setEditingKey("");
+    setEditingRow("");
   };
   const handleSave = async () => {
     try {
       const row = await form.validateFields();
-      const submitData = { key:editingKey, ...row };
-      console.log("Updating", submitData, row);
-      updateStockApi(1, editingKey, submitData);
-      message.success("Updated Stock");
+      const submitData = { key:editingRow, ...row };
+      console.log("Updating", submitData);
+      updateItem(editingRow, submitData);
+      message.success("Updated Successfully");
       handleCancel();
       forceRender();
     } catch (error) {

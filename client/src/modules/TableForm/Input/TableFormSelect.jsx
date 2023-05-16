@@ -14,7 +14,7 @@ const TableFormSelect = ({ form }) => {
     console.log(`selected ${value}`);
     const { label } = options.find((item) => item.value === value);
     if (form) {
-      form.setFieldValue('key', value);
+      form.setFieldValue('id', value);
       form.setFieldValue("name", label);
     }
   };

@@ -8,6 +8,7 @@ const useService = ({ service, condition = true, deps = [] }) => {
     try {
       setLoadingState(true);
       const result = await service();
+      console.log("Fetch data", result);
       setLoadingState(false);
       setData(result);
     } catch (error) {
@@ -16,7 +17,6 @@ const useService = ({ service, condition = true, deps = [] }) => {
   };
   useEffect(() => {
     if (condition) {
-      console.log("Fetch data");
       fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
