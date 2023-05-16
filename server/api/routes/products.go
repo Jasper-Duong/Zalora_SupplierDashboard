@@ -19,5 +19,6 @@ func LoadProductsRoute(route *gin.RouterGroup) {
 	{
 		curGroup.GET("/stocks", handlers.GetProductStocks)
 		curGroup.GET("/suppliers", handlers.GetProductSuppliers)
+		curGroup.GET("/suppliers/missing", handlers.GetProductMissingSuppliers)
 	}
 }

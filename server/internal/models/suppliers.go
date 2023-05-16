@@ -16,11 +16,6 @@ type Suppliers struct {
 	Stock         uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
 
-/*type SuppliersInfo struct {
-	ID   uint   `gorm:"column:id"`
-	Name string `gorm:"column:name"`
-}*/
-
 type SupplierWithAddresses struct {
 	Suppliers
 	Addresses []Addresses `json:"addresses"`

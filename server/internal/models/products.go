@@ -32,27 +32,21 @@ type QueryParams struct {
 }
 
 func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var suppliers []map[string]interface{}
-	err := db.Model(&Products{}).Select("suppliers.id, suppliers.name").
-		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
-		Joins("left join suppliers on suppliers.id = products_suppliers.supplier_id").
-		Where("products.id = ?", id).Find(&suppliers).Error
+	var suppliers []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(Suppliers{}).
+		Select("suppliers.id, suppliers.name").
+		Joins("left join products_suppliers on products_suppliers.supplier_id = suppliers.id").
+		Where("products_suppliers.product_id = ?", id).
+		Distinct().
+		Find(&suppliers).Error
 	if err != nil {
 		return nil, err
 	}
 	return suppliers, nil
 }
 
-func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
-	var total int64
-	err := db.Model(&Products{}).Count(&total).Error
-	if err != nil {
-		return nil, 0, err
-	}
-
+func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, uint32, error) {
 	var products []Products
-	offset := (query.Page - 1) * query.Limit
-	db = db.Limit(query.Limit).Offset(offset)
 
 	q := reflect.TypeOf(query).Elem()
 	for i := 0; i < q.NumField(); i++ {
@@ -67,12 +61,18 @@ func GetProducts(db *gorm.DB, query *QueryParams) ([]Products, int64, error) {
 		}
 	}
 
-	err = db.Find(&products).Error
+	var total int64
+	db.Model(&Products{}).Count(&total)
+	offset := (query.Page - 1) * query.Limit
+	db = db.Offset(offset).Limit(query.Limit)
+	err := db.Find(&products).Error
 	if err != nil {
 		return nil, 0, err
 	}
+	//total := uint32(len(products))
+	//products = products[query.Page-1 : query.Page-1+query.Limit]
 
-	return products, total, nil
+	return products, uint32(total), nil
 }
 
 func GetProductByID(db *gorm.DB, id int) (Products, error) {
@@ -104,11 +104,11 @@ func DeleteProduct(db *gorm.DB, id int) error {
 	return tx.Error
 }
 
-func GetAttributeOfProducts(db *gorm.DB, attribute string) ([]map[string]interface{}, error) {
-	var products []map[string]interface{}
-	err := db.Model(&Products{}).Select("id", attribute).Find(&products).Error
+func GetAttributeOfProducts(db *gorm.DB, attribute string) ([]string, error) {
+	var result []string
+	err := db.Model(&Products{}).Distinct(attribute).Pluck(attribute, &result).Error
 	if err != nil {
 		return nil, err
 	}
-	return products, nil
+	return result, nil
 }

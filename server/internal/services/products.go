@@ -14,7 +14,7 @@ func GetSuppliersByProductID(id string) ([]map[string]interface{}, error) {
 	return models.GetSuppliersByProductID(db.DB, uint32(idInt))
 }
 
-func GetProducts(query *models.QueryParams) ([]models.ProductsWithSuppliers, int64, error) {
+func GetProducts(query *models.QueryParams) ([]models.ProductsWithSuppliers, uint32, error) {
 	products, total, err := models.GetProducts(db.DB, query)
 	if err != nil {
 		return nil, 0, err
@@ -67,5 +67,16 @@ func DeleteProduct(id string) error {
 }
 
 func GetAttributeOfProducts(attribute string) ([]map[string]interface{}, error) {
-	return models.GetAttributeOfProducts(db.DB, attribute)
+	values, err := models.GetAttributeOfProducts(db.DB, attribute)
+	if err != nil {
+		return make([]map[string]interface{}, 0), err
+	}
+	var attributeList []map[string]interface{}
+	for _, value := range values {
+		attributeList = append(attributeList, map[string]interface{}{
+			"text":  value,
+			"value": value,
+		})
+	}
+	return attributeList, nil
 }

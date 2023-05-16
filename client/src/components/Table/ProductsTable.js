@@ -1,10 +1,21 @@
-import { Button, Space } from "antd";
+import { Button, Space, Table, Select, Input } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import EditProductBtn from "../EditProduct/EditProductBtn";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
+import { useState } from 'react'
 
+import { getFilterOptions } from "../../services/filter";
 const ProductsTable = () => {
+  const [filterOptions, setFilterOptions] = useState([]);
+
+  const handleFilterDropdownOpenChange = async (visible, attribute) => {
+    if (visible) {
+      const options = await getFilterOptions(`products/attribute/${attribute}`);
+      setFilterOptions(options.data);
+    }
+  }
+
   const columns = [
     {
       title: "Name",
@@ -18,11 +29,9 @@ const ProductsTable = () => {
       title: "Brand",
       dataIndex: "brand",
       key: "brand",
-      filters: [
-        { text: "Brand 1", value: "Brand 1" },
-        { text: "Brand 2", value: "Brand 2" },
-      ],
+      filters: filterOptions,
       filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "brand"),
     },
     {
       title: "SKU",
@@ -41,31 +50,28 @@ const ProductsTable = () => {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: [
-        { text: "Đen,", value: "Đen," },
-        { text: "Hồng", value: "Hồng" },
-      ],
+      filters: filterOptions,
       filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "color"),
     },
     {
       title: "Suppliers",
       dataIndex: "suppliers",
       key: "suppliers",
-      filters: [
-        { text: "Supplier 1", value: "Supplier 1" },
-        { text: "Supplier 2", value: "Supplier 2" },
-      ],
+      filters: filterOptions,
       filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "color"),
       render: (suppliers) => {
         return (
           <>
             {suppliers.map((supplier) => (
-              <p key={supplier}>{supplier.toUpperCase()}</p>
+              <p key={supplier}>{supplier.name}</p>
             ))}
           </>
         );
       },
     },
+    Table.EXPAND_COLUMN,
     /*
         {
             title: 'Status',

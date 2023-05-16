@@ -13,7 +13,7 @@ import (
 )
 
 type ProductListResponse struct {
-	TotalCount int64                          `json:"total"`
+	TotalCount uint32                         `json:"total"`
 	Products   []models.ProductsWithSuppliers `json:"products"`
 }
 
