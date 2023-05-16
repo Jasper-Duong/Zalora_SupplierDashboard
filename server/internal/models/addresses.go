@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -44,11 +46,12 @@ func CreateAddress(db *gorm.DB, data *AddressCreate) error {
 }
 
 func UpdateAddress(db *gorm.DB, data *AddressUpdate, id int) error {
-	tx := db.Where("id = ?", id).Updates(&data)
-	if tx.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+	var old *AddressUpdate
+	if err := db.First(&old, "id = ?", id).Error; err != nil {
+		return err
 	}
-	return tx.Error
+	fmt.Println(data)
+	return db.Where("id = ?", id).Updates(&data).Error
 }
 
 func DeleteAddress(db *gorm.DB, id int) error {

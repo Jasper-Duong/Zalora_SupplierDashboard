@@ -31,6 +31,7 @@ const getAddressesBySupplierId = (querySupplierId) => {
 
 const addAddress = (supplierId, submitData) => {
   const newId = Date.now();
+  console.log(submitData);
   addresses.push({ id: newId, ...submitData });
 };
 

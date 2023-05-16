@@ -29,7 +29,7 @@ export default function HomeMenu() {
   return (
     <Menu
       theme="dark"
-      defaultSelectedKeys={["products/table"]}
+      // defaultSelectedKeys={["products/table"]}
       mode="inline"
       items={items}
       onSelect={handleSelect}

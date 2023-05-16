@@ -25,7 +25,7 @@ export default function SupplierForm({ supplier, onFinish, submitBtnText }) {
             name="email"
             rules={[
               {
-                require: true,
+                required: true,
                 message: "Supplier Email is required",
               },
               { pattern: regexPatterns.email, message: "Invalid Email" },

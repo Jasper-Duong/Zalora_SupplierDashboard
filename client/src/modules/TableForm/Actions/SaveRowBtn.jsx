@@ -11,7 +11,7 @@ export default function SaveRowBtn({ key }) {
   const handleSave = async () => {
     try {
       const row = await form.validateFields();
-      const submitData = { key:editingRow, ...row };
+      const submitData = { ...row };
       console.log("Updating", submitData);
       await updateItem(editingRow, submitData);
       message.success("Updated Successfully");

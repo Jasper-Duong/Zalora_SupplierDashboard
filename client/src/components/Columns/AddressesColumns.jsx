@@ -10,7 +10,7 @@ export default function AddressesColumns(editingRow) {
       dataIndex: "type",
       key: "type",
       width: "25%",
-      editable: false,
+      editable: true,
     },
     {
       title: "Address Info",

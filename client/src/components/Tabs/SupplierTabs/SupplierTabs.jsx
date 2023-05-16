@@ -6,13 +6,13 @@ import HomeHeader from "../../../layout/HomeLayout/HomeHeader";
 import SupplierStock from "../../SupplierStock/SupplierStock";
 import SupplierAddresses from "./SupplierAddresses";
 
-export default function SupplierTabs({ closeModal, supplier }) {
+export default function SupplierTabs() {
   const items = [
     {
       key: "general",
       label: "General",
       children: (
-        <EditSupplierForm closeModal={closeModal} supplier={supplier} />
+        <EditSupplierForm />
       ),
     },
     {
