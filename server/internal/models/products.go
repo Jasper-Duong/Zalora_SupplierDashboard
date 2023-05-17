@@ -13,7 +13,7 @@ type Products struct {
 	Sku    string `gorm:"column:SKU;not null;unique" json:"sku"`
 	Size   string `gorm:"column:size;not null" json:"size" binding:"required"`
 	Color  string `gorm:"column:color;not null" json:"color" binding:"required"`
-	Status bool   `gorm:"column:status;not null" json:"status" binding:"required"`
+	Status *bool  `gorm:"column:status;not null" json:"status" binding:"required"`
 	Stock  uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
 

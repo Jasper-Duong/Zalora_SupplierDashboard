@@ -1,7 +1,7 @@
-import axios from '../config/axios'
+import {request} from '../config/axios'
 
 async function getFilterOptions(options) {
-    return axios.get(`${options}`)
+    return request.get(`${options}`)
 }
 
 export {

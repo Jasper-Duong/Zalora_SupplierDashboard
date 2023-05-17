@@ -16,5 +16,5 @@ export default function ProductTabs() {
       children: <ProductStock />,
     },
   ];
-  return <Tabs items={items} />;
+  return <Tabs destroyInactiveTabPane items={items} />;
 }

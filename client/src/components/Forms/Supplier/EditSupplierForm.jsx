@@ -1,16 +1,27 @@
 import React from "react";
 import SupplierForm from "./SupplierForm";
+import { useParams } from "react-router-dom";
+import { message } from "antd";
 
-export default function EditSupplierForm({ closeModal, supplier }) {
-  const onFinish = (values) => {
-    console.log({ values });
-    closeModal();
+import { getSupplierByIdApi, updateSupplierByIdApi } from "../../../services/supplier";
+import useService from "../../../hooks/useService";
+
+export default function EditSupplierForm() {
+  const params = useParams()
+  const supplier = useService({service: () => getSupplierByIdApi(params.id)})
+  const onFinish = async (values) => {
+    console.log(values);
+    try {
+      await updateSupplierByIdApi(params.id, values)
+      message.success("Successfully Updated Supplier");
+    } catch (err) {
+      message.error("Failed" + err)
+    }
   };
   return (
     <SupplierForm
       onFinish={onFinish}
-      closeModal={closeModal}
-      supplier={supplier}
+      supplier={supplier?.data}
       submitBtnText="Update"
     />
   );

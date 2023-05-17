@@ -2,6 +2,7 @@ import { Button, Popconfirm } from "antd";
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { TableFormContext } from "../../../contexts/TableFormContext";
+import { message } from "antd";
 
 export default function AddRowBtn({AddRowComponent}) {
   const {
@@ -9,10 +10,15 @@ export default function AddRowBtn({AddRowComponent}) {
     services: { addItem },
   } = useContext(TableFormContext);
   const [isAdd, setIsAdd] = useState(false);
-  const handleAdd = ({ id, ...data }) => {
-    addItem(id, data);
-    setIsAdd(false);
-    forceRender();
+  const handleAdd = async ({ id, ...data }) => {
+    try {
+      await addItem(id, data);
+      setIsAdd(false);
+      forceRender();
+      message.success("Added new Stock")
+    } catch (err) {
+      message.error("Failed")
+    }
   };
   const AddConfirmBtn = () => (
     <div className="add-btn-confirm">

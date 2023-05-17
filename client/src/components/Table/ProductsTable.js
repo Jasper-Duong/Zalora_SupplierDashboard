@@ -51,8 +51,6 @@ const ProductsTable = () => {
       filters: filterOptions,
       filterSearch: true,
       onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/brand"),
-      //filteredValue: filterValues.brand || null,
-      //onFilter: handleFilter,
     },
     {
       title: "SKU",
@@ -71,9 +69,7 @@ const ProductsTable = () => {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: [
-        {text: "white", value: "white"}
-      ],
+      filters: filterOptions,
       filterSearch: true,
       onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color"),
     },

@@ -7,7 +7,6 @@ import FormContainer from "../../Container/FormContainer";
 import { useForm } from "antd/es/form/Form";
 
 export default function ProductForm({ product, onFinish, submitBtnText }) {
-  console.log(product)
   const [form] = useForm()
   useEffect(() => {
     form.setFieldsValue({ ...product })
@@ -18,7 +17,7 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
         onFinish={onFinish}
         layout="vertical"
         form={form}
-        // initialValues={product}
+        initialValues={{status: true}}
         labelAlign="left"
       >
         <Form.Item
@@ -35,13 +34,19 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
         >
           <Input />
         </Form.Item>
+        {product && <><Form.Item
+          label="SKU"
+          name="sku"
+        >
+          <Input disabled/>
+        </Form.Item>
         <Form.Item
           label="Stock"
           name="stock"
           rules={[{ required: true, message: "Product Stock is required" }]}
         >
-          <InputNumber min={0} disabled={product?true:false}/>
-        </Form.Item>
+          <InputNumber min={0} disabled/>
+        </Form.Item></>}
         <Form.Item
           label="Color"
           name="color"
@@ -57,7 +62,7 @@ export default function ProductForm({ product, onFinish, submitBtnText }) {
           <Input />
         </Form.Item>
         <Form.Item label="Status" name="status" valuePropName="checked">
-          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+          <Switch checkedChildren="Active" unCheckedChildren="Inactive"/>
         </Form.Item>
         {/* <Form.Item
           label="Suppliers"

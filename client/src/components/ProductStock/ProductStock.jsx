@@ -1,24 +1,19 @@
 import { useParams } from "react-router-dom";
-import {
-  addProductStock,
-  deleteProductStock,
-  getStockByProductId,
-  updateProductStock,
-} from "../../mockdata/stock";
 import TableForm from "../../modules/TableForm/TableForm";
 import ProductStockColumns from "../Columns/ProductStockColumns";
 import ProductStockCell from "../../modules/TableForm/Cell/ProductStockCell";
 import AddRowProductStock from "../AddRowForm/AddRowProductStock";
+import { addStockByApi, deleteStockApi, getStockByProductIdApi, updateStockApi } from "../../services/stock";
 
 export default function ProductStock() {
   const { id } = useParams();
   const services = {
-    getData: () => getStockByProductId(id),
+    getData: () => getStockByProductIdApi(id),
     updateItem: (supplierId, submitData) =>
-      updateProductStock(supplierId, id, submitData),
+      updateStockApi(supplierId, id, submitData),
     addItem: (supplierId, submitData) =>
-      addProductStock(supplierId, id, submitData),
-    deleteItem: (supplierId) => deleteProductStock(supplierId, id),
+      addStockByApi(supplierId, id, submitData),
+    deleteItem: (supplierId) => deleteStockApi(supplierId, id),
   };
   return (
     <TableForm
@@ -29,34 +24,3 @@ export default function ProductStock() {
     />
   );
 }
-// // getSuppliersStockByProductId
-// const suppliersStock = [
-//   {
-//     id: 1,
-//     name: "Supplier 1",
-//     stock: 10,
-//   },
-//   {
-//     id: 2,
-//     name: "Supplier 2",
-//     stock: 20,
-//   },
-// ];
-// const [isAdd, setIsAdd] = useState(false);
-// const renderProductStocks = () =>
-//   suppliersStock.map((supplierStock) => (
-//     <EditProductStockForm
-//       key={supplierStock.id}
-//       supplierStock={supplierStock}
-//     />
-//   ));
-// return (
-//   <>
-//     {renderProductStocks()}
-//     {isAdd ? (
-//       <AddProductStock setIsEdit={setIsAdd} />
-//     ) : (
-//       <Button onClick={() => setIsAdd(true)}>Add new +</Button>
-//     )}
-//   </>
-// );

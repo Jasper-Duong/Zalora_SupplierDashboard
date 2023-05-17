@@ -3,11 +3,19 @@ import ProductForm from "./ProductForm";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 
+import { addProductByIdApi } from '../../../services/product'
+
 export default function AddProductForm() {
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    message.success("Added Product");
-    setTimeout(() => navigate("/"), 300);
+  const onFinish = async (values) => {
+    console.log(values)
+    try {
+      await addProductByIdApi(values)
+      setTimeout(() => navigate("/"), 300);
+      message.success("Added Product");
+    } catch (err) {
+      message.error("Failed")
+    }
   };
   return (
     <ProductForm

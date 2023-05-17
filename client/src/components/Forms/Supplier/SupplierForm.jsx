@@ -1,17 +1,23 @@
 import { Form, Input, InputNumber, Switch } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { regexPatterns } from "../../../constants/forms";
 import FormBtns from "../FormBtns";
 import SupplierFormCancelBtn from "./SupplierFormCancelBtn";
 import FormContainer from "../../Container/FormContainer";
+import { useForm } from "antd/es/form/Form";
 
 export default function SupplierForm({ supplier, onFinish, submitBtnText }) {
+  const [form] = useForm()
+  useEffect(() => {
+    form.setFieldsValue({ ...supplier })
+  }, [supplier])
   return (
     <FormContainer>
         <Form
           layout="vertical"
           onFinish={onFinish}
-          initialValues={supplier ? { ...supplier, stock: 10 } : { stock: 10 }}
+          form={form}
+          initialValues={{status: true}}
         >
           <Form.Item
             label="Name"
@@ -25,7 +31,7 @@ export default function SupplierForm({ supplier, onFinish, submitBtnText }) {
             name="email"
             rules={[
               {
-                require: true,
+                required: true,
                 message: "Supplier Email is required",
               },
               { pattern: regexPatterns.email, message: "Invalid Email" },
@@ -35,7 +41,7 @@ export default function SupplierForm({ supplier, onFinish, submitBtnText }) {
           </Form.Item>
           <Form.Item
             label="Contact Number"
-            name="contactNumber"
+            name="contact_number"
             rules={[
               {
                 required: true,
@@ -49,9 +55,9 @@ export default function SupplierForm({ supplier, onFinish, submitBtnText }) {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Stock" name="stock">
+          {supplier && <Form.Item label="Stock" name="stock">
             <InputNumber disabled min={0} />
-          </Form.Item>
+          </Form.Item>}
           <Form.Item label="Status" name="status" valuePropName="checked">
             <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
           </Form.Item>

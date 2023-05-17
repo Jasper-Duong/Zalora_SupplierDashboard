@@ -12,7 +12,7 @@ type Suppliers struct {
 	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
 	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
 	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
-	Status        bool   `gorm:"column:status;default:true" json:"status"`
+	Status        *bool  `gorm:"column:status;default:true" json:"status"`
 	Stock         uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
 

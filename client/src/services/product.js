@@ -1,17 +1,19 @@
-import axios from '../config/axios'
+import { request } from '../config/axios'
 
 function getProductByIdApi(id) {
-    return axios.get(`products/${id}`)
+    return request.get(`products/${id}`)
+}
+
+async function addProductByIdApi(product) {
+    return request({ method: "POST", url: `products/`, data: JSON.stringify(product)})
 }
 
 function updateProductByIdApi(id, product) {
-    return axios.put(`products/${id}`, JSON.stringify(product))
+    return request.put(`products/${id}`, JSON.stringify(product))
 }
 
-function getProductStocks(id) {
-    return axios.get(`products/${id}/stocks`)
-}
 export {
     getProductByIdApi,
+    addProductByIdApi,
     updateProductByIdApi
 }

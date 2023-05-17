@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"server/internal/models"
 	"server/internal/services"
@@ -50,7 +51,7 @@ func UpdateSuppliers(c *gin.Context) {
 		return
 	}
 	id := c.Param("id")
-
+	fmt.Println("help")
 	if err := services.UpdateSupplier(&supplier, id); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
