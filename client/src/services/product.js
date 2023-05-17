@@ -1,19 +1,28 @@
-import { request } from '../config/axios'
+import { request } from "../config/axios";
 
-function getProductByIdApi(id) {
-    return request.get(`products/${id}`)
+async function getProductByIdApi(id) {
+  return request.get(`products/${id}`);
+}
+
+async function getMissingSuppliersByProductIdApi(id) {
+  return request.get(`products/${id}/suppliers/missing`);
 }
 
 async function addProductByIdApi(product) {
-    return request({ method: "POST", url: `products/`, data: JSON.stringify(product)})
+  return request({
+    method: "POST",
+    url: `products/`,
+    data: JSON.stringify(product),
+  });
 }
 
-function updateProductByIdApi(id, product) {
-    return request.put(`products/${id}`, JSON.stringify(product))
+async function updateProductByIdApi(id, product) {
+  return request.put(`products/${id}`, JSON.stringify(product));
 }
 
 export {
-    getProductByIdApi,
-    addProductByIdApi,
-    updateProductByIdApi
-}
+  getProductByIdApi,
+  getMissingSuppliersByProductIdApi,
+  addProductByIdApi,
+  updateProductByIdApi,
+};
