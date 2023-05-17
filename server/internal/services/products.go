@@ -50,6 +50,7 @@ func CreateProduct(product *models.Products) error {
 }
 
 func UpdateProduct(product *models.Products, id string) error {
+	product.Sku = utils.SkuGenerator(product)
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return err

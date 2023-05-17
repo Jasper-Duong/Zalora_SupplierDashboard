@@ -69,7 +69,6 @@ func CreateProduct(c *gin.Context) {
 
 func UpdateProduct(c *gin.Context) {
 	var product models.Products
-
 	if err := utils.ValidateInput(&product, c); err != nil {
 		return
 	}
