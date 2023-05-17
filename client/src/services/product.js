@@ -20,9 +20,14 @@ async function updateProductByIdApi(id, product) {
   return request.put(`products/${id}`, JSON.stringify(product));
 }
 
+async function deleteProductApi(id) {
+  return request.delete(`products/${id}`);
+}
+
 export {
   getProductByIdApi,
   getMissingSuppliersByProductIdApi,
   addProductByIdApi,
   updateProductByIdApi,
+  deleteProductApi,
 };

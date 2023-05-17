@@ -84,7 +84,7 @@ const ExtendedTable = (props) => {
             }
         }
         fetchData()
-    }, [JSON.stringify(tableParams)])
+    }, [JSON.stringify(tableParams), props.isForceRender])
 
     return (
         <Table 

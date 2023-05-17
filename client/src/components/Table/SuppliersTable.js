@@ -1,12 +1,23 @@
-import { Button, Space, Table } from "antd";
-import { DeleteFilled } from "@ant-design/icons";
+import { Button, Popconfirm, Space, Table, message } from "antd";
+import { DeleteFilled, EditOutlined } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
-import AntdModal from "../Modals/AntdModal";
-import EditSupplierBtn from "../EditSupplier/EditSupplierBtn";
-import EditSupplier from "../EditSupplier/EditSupplier";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { deleteSupplierApi } from "../../services/supplier";
 
 const SuppliersTable = () => {
+  const [isForceRender, setIsForceRender] = useState(false);
+  const forceRender = () => setIsForceRender((prev) => !prev);
+  const handleDeleteRecord = async (record) => {
+    try {
+      await deleteSupplierApi(record.id);
+      message.success(`Deleted ${record.name}`);
+      forceRender();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const columns = [
     {
       title: "Name",
@@ -40,23 +51,23 @@ const SuppliersTable = () => {
       dataIndex: "addresses",
       key: "addresses",
       render: (addresses) => {
-        return (
-          <p>{addresses.length}</p>
-        )
-      }
+        return <p>{addresses.length}</p>;
+      },
     },
     {
       align: "center",
       key: "action",
       render: (_, record) => (
         <Space wrap>
-          <AntdModal
-            ShowModalBtn={EditSupplierBtn}
-            BodyComponent={EditSupplier}
-            data={record}
-            title={"Edit Supplier"}
-          />
-          <Button type="primary" icon={<DeleteFilled />} danger />
+          <Link to={`/products/edit/${record.id}`}>
+            <Button type="primary" icon={<EditOutlined />} />
+          </Link>
+          <Popconfirm
+            title={"Sure to delete?"}
+            onConfirm={() => handleDeleteRecord(record)}
+          >
+            <Button type="primary" icon={<DeleteFilled />} danger />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -65,7 +76,11 @@ const SuppliersTable = () => {
   return (
     <>
       <HomeHeader title={"Supplier Table"} />
-      <ExtendedTable columns={columns} resource={"suppliers"}></ExtendedTable>
+      <ExtendedTable
+        isForceRender={isForceRender}
+        columns={columns}
+        resource={"suppliers"}
+      ></ExtendedTable>
     </>
   );
 };

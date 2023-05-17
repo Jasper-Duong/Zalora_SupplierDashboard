@@ -24,9 +24,14 @@ async function updateSupplierByIdApi(id, supplier) {
   });
 }
 
+async function deleteSupplierApi(id) {
+  return request({ method: "DELETE", url: `suppliers/${id}` });
+}
+
 export {
   getSupplierByIdApi,
   getMissingProductsBySupplierIdApi,
   addSupplierByIdApi,
   updateSupplierByIdApi,
+  deleteSupplierApi,
 };
