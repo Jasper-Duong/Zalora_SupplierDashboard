@@ -1,105 +1,138 @@
 package handlers
 
 import (
-	"errors"
-	"net/http"
-
 	"server/internal/models"
 	"server/internal/services"
-	"server/utils"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-type ProductListResponse struct {
-	TotalCount uint32                         `json:"total"`
-	Products   []models.ProductsWithSuppliers `json:"products"`
+type ProductsHandler struct {
+	BaseHandler
 }
 
-func GetProducts(c *gin.Context) {
-	var query models.QueryParams
+func NewProductsHandler() *ProductsHandler {
+	return &ProductsHandler{}
+}
+
+func (h *ProductsHandler) GetProducts(c *gin.Context) {
+	var query models.ProductsQueryParams
 	c.ShouldBindQuery(&query)
 	products, total, err := services.GetProducts(&query)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
 
-	response := ProductListResponse{
-		TotalCount: total,
-		Products:   products,
-	}
-	c.JSON(http.StatusOK, response)
+	h.handleSuccessGet(c, map[string]interface{}{
+		"products": products,
+		"total":    total,
+	})
 }
 
-func GetProductSuppliers(c *gin.Context) {
+func (h *ProductsHandler) GetProductSuppliers(c *gin.Context) {
 	suppliers, err := services.GetSuppliersByProductID(c.Param("product_id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, suppliers)
+	h.handleSuccessGet(c, suppliers)
 }
 
-func GetProductByID(c *gin.Context) {
-	product, err := services.GetProductByID(c.Param("product_id"))
+func (h *ProductsHandler) GetProductByID(c *gin.Context) {
+	id := h.parseId(c, c.Param("product_id"))
+	if id == 0 {
+		return
+	}
+	product, err := services.GetProductByID(id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
-
-	c.JSON(http.StatusOK, product)
+	h.handleSuccessGet(c, &product)
 }
 
-func CreateProduct(c *gin.Context) {
+func (h *ProductsHandler) CreateProduct(c *gin.Context) {
 	var product models.Products
-	if err := utils.ValidateInput(&product, c); err != nil {
+	if err := h.validateInput(c, &product); err != nil {
 		return
 	}
 
 	if err := services.CreateProduct(&product); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	h.handleSuccessCreate(c)
 }
 
-func UpdateProduct(c *gin.Context) {
+func (h *ProductsHandler) UpdateProduct(c *gin.Context) {
 	var product models.Products
-	if err := utils.ValidateInput(&product, c); err != nil {
+	if err := h.validateInput(c, &product); err != nil {
 		return
 	}
 
-	if err := services.UpdateProduct(&product, c.Param("product_id")); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	id := h.parseId(c, c.Param("product_id"))
+	if id == 0 {
 		return
 	}
 
-	c.Status(http.StatusOK)
+	if err := services.UpdateProduct(&product, id); err != nil {
+		h.handleError(c, err)
+		return
+	}
+
+	h.handleSuccessUpdate(c)
 }
 
-func DeleteProduct(c *gin.Context) {
-	if err := services.DeleteProduct(c.Param("product_id")); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+func (h *ProductsHandler) DeleteProduct(c *gin.Context) {
+	id := h.parseId(c, c.Param("product_id"))
+	if id == 0 {
 		return
 	}
-	c.Status(http.StatusOK)
+	if err := services.DeleteProduct(id); err != nil {
+		h.handleError(c, err)
+		return
+	}
+	h.handleSuccessDelete(c)
 }
 
-func GetAttributeOfProducts(c *gin.Context) {
+func (h *ProductsHandler) GetAttributeOfProducts(c *gin.Context) {
 	attribute := c.Param("attribute")
 	products, err := services.GetAttributeOfProducts(attribute)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, products)
+	h.handleSuccessGet(c, products)
+}
+
+func (h *ProductsHandler) GetProductStocks(c *gin.Context) {
+	id := h.parseId(c, c.Param("product_id"))
+	if id == 0 {
+		return
+	}
+	stocks, err := services.GetProductStocks(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+
+	h.handleSuccessGet(c, stocks)
+}
+
+func (h *ProductsHandler) GetProductMissingSuppliers(c *gin.Context) {
+	id := h.parseId(c, c.Param("product_id"))
+	if id == 0 {
+		return
+	}
+	suppliers, err := services.GetProductMissingSuppliers(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+
+	h.handleSuccessGet(c, suppliers)
 }

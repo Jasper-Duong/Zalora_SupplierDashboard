@@ -1,70 +1,53 @@
-import { Button, Space, Table, Input } from "antd";
-import { DeleteFilled } from "@ant-design/icons";
+import { Button, Popconfirm, Space, Table, Input, message } from "antd";
+import { DeleteFilled, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
-import AntdModal from "../Modals/AntdModal";
-import EditSupplierBtn from "../EditSupplier/EditSupplierBtn";
-import EditSupplier from "../EditSupplier/EditSupplier";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { deleteSupplierApi } from "../../services/supplier";
+import CustomFilterDropdown from "./CustomFilterDropdown";
 
-const CustomFilterDropdown = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
-  return (
-    <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          placeholder={`Search `}
-          value={selectedKeys[0]}
-          onChange={(e) => {}}
-          onPressEnter={() => {}}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => {}}
-            //icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => {}}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-        </Space>
-      </div>
-  )
-}
 const SuppliersTable = () => {
+  const [isForceRender, setIsForceRender] = useState(false);
+  const forceRender = () => setIsForceRender((prev) => !prev);
+  const handleDeleteRecord = async (record) => {
+    try {
+      await deleteSupplierApi(record.id);
+      message.success(`Deleted ${record.name}`);
+      forceRender();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: {
-        multiple: 2,
-      },
-      filterDropdown: CustomFilterDropdown
+      /*sorter: {
+        multiple: 1,
+      },*/
+      ...CustomFilterDropdown("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      ...CustomFilterDropdown("email"),
     },
     {
       title: "Contact Number",
       dataIndex: "contact_number",
       key: "contact_number",
+      ...CustomFilterDropdown("contact_number")
     },
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
-      sorter: {
+      /*sorter: {
         multiple: 1,
-      },
+      },*/
     },
     Table.EXPAND_COLUMN,
     {
@@ -72,23 +55,23 @@ const SuppliersTable = () => {
       dataIndex: "addresses",
       key: "addresses",
       render: (addresses) => {
-        return (
-          <p>{addresses.length}</p>
-        )
-      }
+        return <p>{addresses.length}</p>;
+      },
     },
     {
       align: "center",
       key: "action",
       render: (_, record) => (
         <Space wrap>
-          <AntdModal
-            ShowModalBtn={EditSupplierBtn}
-            BodyComponent={EditSupplier}
-            data={record}
-            title={"Edit Supplier"}
-          />
-          <Button type="primary" icon={<DeleteFilled />} danger />
+          <Link to={`/suppliers/edit/${record.id}`}>
+            <Button type="primary" icon={<EditOutlined />} />
+          </Link>
+          <Popconfirm
+            title={"Sure to delete?"}
+            onConfirm={() => handleDeleteRecord(record)}
+          >
+            <Button type="primary" icon={<DeleteFilled />} danger />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -97,7 +80,11 @@ const SuppliersTable = () => {
   return (
     <>
       <HomeHeader title={"Supplier Table"} />
-      <ExtendedTable columns={columns} resource={"suppliers"}></ExtendedTable>
+      <ExtendedTable
+        isForceRender={isForceRender}
+        columns={columns}
+        resource={"suppliers"}
+      ></ExtendedTable>
     </>
   );
 };

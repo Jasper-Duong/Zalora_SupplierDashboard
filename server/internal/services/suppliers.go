@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"server/db"
 	"server/internal/models"
-	"strconv"
 )
 
 func GetSuppliers(query *models.SuppliersQueryParam) ([]models.SupplierWithAddresses, uint32, error) {
@@ -30,55 +29,37 @@ func CreateSupplier(supplier *models.Suppliers) error {
 	return models.CreateSupplier(db.DB, supplier)
 }
 
-func UpdateSupplier(supplier *models.Suppliers, id string) error {
-	ID, err := strconv.ParseUint(id, 10, 32)
+func UpdateSupplier(supplier *models.Suppliers, id uint32) error {
+	_, err := models.GetSupplierByID(db.DB, id)
 	if err != nil {
 		return err
 	}
-	supplier.ID = uint32(ID)
+	supplier.ID = id
 	return models.UpdateSupplier(db.DB, supplier)
 }
 
-func DeleteSupplier(id string) error {
-	ID, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return err
-	}
-	return models.DeleteSupplier(db.DB, ID)
+func DeleteSupplier(id uint32) error {
+	return models.DeleteSupplier(db.DB, id)
 }
 
-func GetSupplierByID(id string) (models.Suppliers, error) {
-	ID, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return models.Suppliers{}, err
-	}
-	return models.GetSupplierByID(db.DB, uint32(ID))
+func GetSupplierByID(id uint32) (models.Suppliers, error) {
+	return models.GetSupplierByID(db.DB, id)
 }
 
 func GetSuppliersName() ([]map[string]interface{}, error) {
 	return models.GetSuppliersAttribute(db.DB, "name")
 }
 
-func GetSupplierAddresses(id string) ([]map[string]interface{}, error) {
-	ID_, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
+func GetSupplierAddresses(id uint32) ([]map[string]interface{}, error) {
+	if _, err := models.GetSupplierByID(db.DB, id); err != nil {
 		return make([]map[string]interface{}, 0), err
 	}
-	ID := uint32(ID_)
-	if _, err = models.GetSupplierByID(db.DB, ID); err != nil {
-		return make([]map[string]interface{}, 0), err
-	}
-	return models.GetAddressesBySupplierID(db.DB, ID)
+	return models.GetAddressesBySupplierID(db.DB, id)
 }
 
-func GetSupplierMissingProducts(id string) ([]map[string]interface{}, error) {
-	ID_, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return make([]map[string]interface{}, 0), err
-	}
-	ID := uint32(ID_)
+func GetSupplierMissingProducts(id uint32) ([]map[string]interface{}, error) {
 	var products []map[string]interface{}
-	if products, err = models.GetMissingProductsBySupplierID(db.DB, ID); err != nil {
+	if products, err := models.GetMissingProductsBySupplierID(db.DB, id); err != nil {
 		fmt.Println(products)
 	}
 	return products, nil

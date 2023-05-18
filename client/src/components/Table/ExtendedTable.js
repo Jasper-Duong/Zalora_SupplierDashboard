@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Tag } from "antd";
+import { Table, Tag, Select } from "antd";
 import qs from "qs";
 import { request } from "../../config/axios";
 
@@ -30,8 +30,8 @@ const ExtendedTable = (props) => {
             pageSize: 10,
         },
         sorter: [],
+        status: "true"
     });
-
 
     const getQueryParams = (params) => {
         let filters = {}
@@ -44,8 +44,9 @@ const ExtendedTable = (props) => {
         return ({
             page: params.pagination?.current,
             limit: params.pagination?.pageSize,
+            status: params.status,
             sort: params.sorter.map(sort => sort.columnKey),
-            order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
+            //order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
             ...filters
         })
     }
@@ -55,8 +56,16 @@ const ExtendedTable = (props) => {
             pagination,
             filters,
             sorter: Array.isArray(sorter) ? sorter : [sorter],
+            status: tableParams.status
         });
     }
+
+    const handleStatusChange = (value) => {
+        setTableParams({
+            ...tableParams,
+            status: value
+        });
+      };
 
 
     useEffect(() => {
@@ -76,9 +85,20 @@ const ExtendedTable = (props) => {
             }
         }
         fetchData()
-    }, [JSON.stringify(tableParams)])
+    }, [JSON.stringify(tableParams), props.isForceRender])
 
     return (
+        <>
+        <Select
+          size={"large"}
+          defaultValue="true"
+          style={{ width: 120 }}
+          onChange={handleStatusChange}
+          options={[
+            {value: "true", label: "Active"},
+            {value: "false", label: "Not Active"}
+          ]}
+        />
         <Table 
             dataSource={data} 
             columns={props.columns}
@@ -89,7 +109,8 @@ const ExtendedTable = (props) => {
                 expandedRowRender: props.resource === 'products' ? ExpandedSuppliers : ExpandedAddresses,
                 rowExpandable: (record) => isRowExpandable(record, props.resource)
             }}
-    ></Table>
+        ></Table>
+        </>
   );
 };
 

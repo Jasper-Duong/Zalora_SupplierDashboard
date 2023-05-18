@@ -7,11 +7,12 @@ import (
 )
 
 func LoadProductsSuppliersRoute(route *gin.RouterGroup) {
-	route.POST("/", handlers.CreateStock)
-	route.PUT("/", handlers.UpdateStock)
+	productssuppliersHandler := handlers.NewProductsSuppliersHandler()
+	route.POST("/", productssuppliersHandler.CreateStock)
+	route.PUT("/", productssuppliersHandler.UpdateStock)
 	curGroup := route.Group("/:product_id")
 	{
-		curGroup.DELETE("/:supplier_id", handlers.DeleteStock)
+		curGroup.DELETE("/:supplier_id", productssuppliersHandler.DeleteStock)
 	}
 
 }

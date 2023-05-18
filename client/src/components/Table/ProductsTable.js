@@ -1,13 +1,28 @@
-import { Button, Space, Table, Select, Input } from "antd";
+import { Button, Space, Table, Popconfirm, Input, message } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import EditProductBtn from "../EditProduct/EditProductBtn";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
-import { useState } from 'react'
+import { useState } from "react";
 
 import { getFilterOptions } from "../../services/filter";
+import { deleteProductApi } from "../../services/product";
+import CustomFilterDropdown from "./CustomFilterDropdown";
+
 const ProductsTable = () => {
-  const [filterOptions, setFilterOptions] = useState({});
+  const [filterOptions, setFilterOptions] = useState([]);
+
+  const [isForceRender, setIsForceRender] = useState(false);
+  const forceRender = () => setIsForceRender((prev) => !prev);
+  const handleDeleteRecord = async (record) => {
+    try {
+      await deleteProductApi(record.id);
+      message.success(`Deleted ${record.name}`);
+      forceRender();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleFilterDropdownOpenChange = async (visible, api, key) => {
     if (visible) {
@@ -23,57 +38,35 @@ const ProductsTable = () => {
     }
   }
 
-  const filterBox = ({ setSelectedKeys, confirm, selectedKeys, clearFilters }) => {
-    const handleSearch = (selectedKeys, confirm) => {
-      confirm();
-    };
-    
-    const handleInputChange = (event) => {
-      console.log(`Selected filter value: ${event.target.value}`);
-      setSelectedKeys(event.target.value ? [event.target.value] : []);
-    };
-    
-    return (
-      <div>
-        <Input
-          placeholder={`Search ${columns[0].title}`}
-          onPressEnter={() => handleSearch(selectedKeys, confirm)}
-          onChange={handleInputChange}
-        />
-        <Button onClick={clearFilters}>Reset</Button>
-      </div>)
-  }
-
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: {
-        multiple: 2,
-      },
+      /*sorter: {
+        multiple: 1,
+      },*/
+      ...CustomFilterDropdown("name"),
     },
     {
       title: "Brand",
       dataIndex: "brand",
       key: "brand",
-      filters: filterOptions?.brand || [],
-      filterSearch: true,
-      //filterDropdown: (props) => {console.log("cuu")},
-      onFilterDropdownOpenChange: (visible) => handleFilterDropdownOpenChange(visible, "products/attribute/brand", "brand"),
+      ...CustomFilterDropdown("brand"),
     },
     {
       title: "SKU",
       dataIndex: "sku",
       key: "sku",
+      ...CustomFilterDropdown("sku"),
     },
     {
       title: "Size",
       dataIndex: "size",
       key: "size",
-      sorter: {
-        multiple: 3,
-      },
+      filters: filterOptions?.size || [],
+      filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => handleFilterDropdownOpenChange(visible, "products/attribute/size", "size"),
     },
     {
       title: "Color",
@@ -87,32 +80,19 @@ const ProductsTable = () => {
       title: "Suppliers",
       dataIndex: "suppliers",
       key: "suppliers",
-      filters: filterOptions?.suppliers || [],
+      //filters: filterOptions?.suppliers || [],
       filterSearch: true,
       onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name", "suppliers"),
       render: (suppliers) => suppliers.length
     },
     Table.EXPAND_COLUMN,
-    /*
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            filters: [      
-                { text: 'Active', value: true, },     
-                { text: 'Not active', value: false, }, 
-            ],
-            render: (status) => (
-                status ? "Active" : "Not active"
-            ),
-        },*/
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
-      sorter: {
-        multiple: 1,
-      },
+      /*sorter: {
+        multiple: 2,
+      },*/
     },
     {
       align: "center",
@@ -121,7 +101,12 @@ const ProductsTable = () => {
         return (
           <Space wrap>
             <EditProductBtn data={record} />
-            <Button type="primary" icon={<DeleteFilled />} danger />
+            <Popconfirm
+              title={"Sure to delete?"}
+              onConfirm={() => handleDeleteRecord(record)}
+            >
+              <Button type="primary" icon={<DeleteFilled />} danger />
+            </Popconfirm>
           </Space>
         );
       },
@@ -129,8 +114,12 @@ const ProductsTable = () => {
   ];
   return (
     <>
-      <HomeHeader title={"Product Table"}/>
-      <ExtendedTable columns={columns} resource={"products"}></ExtendedTable>
+      <HomeHeader title={"Product Table"} />
+      <ExtendedTable
+        isForceRender={isForceRender}
+        columns={columns}
+        resource={"products"}
+      ></ExtendedTable>
     </>
   );
 };

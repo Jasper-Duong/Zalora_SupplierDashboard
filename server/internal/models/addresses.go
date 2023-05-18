@@ -27,6 +27,9 @@ type AddressUpdate struct {
 	AddressInfo string `json:"address_info" gorm:"column:address_info;" binding:"required"`
 }
 
+type AddressesRepository struct {
+}
+
 func (AddressUpdate) TableName() string { return "addresses" }
 
 func (AddressCreate) TableName() string { return "addresses" }
@@ -45,7 +48,7 @@ func CreateAddress(db *gorm.DB, data *AddressCreate) error {
 	return db.Create(&data).Error
 }
 
-func UpdateAddress(db *gorm.DB, data *AddressUpdate, id int) error {
+func UpdateAddress(db *gorm.DB, data *AddressUpdate, id uint32) error {
 	var old *AddressUpdate
 	if err := db.First(&old, "id = ?", id).Error; err != nil {
 		return err
@@ -54,7 +57,7 @@ func UpdateAddress(db *gorm.DB, data *AddressUpdate, id int) error {
 	return db.Where("id = ?", id).Updates(&data).Error
 }
 
-func DeleteAddress(db *gorm.DB, id int) error {
+func DeleteAddress(db *gorm.DB, id uint32) error {
 	tx := db.Delete(&Addresses{}, id)
 	if tx.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound
