@@ -6,8 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var a = "aaa"
-
 type Products struct {
 	ID     uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"column:name;not null" json:"name" binding:"required"`
@@ -93,8 +91,11 @@ func CreateProduct(db *gorm.DB, product *Products) error {
 }
 
 func UpdateProduct(db *gorm.DB, product *Products, id int) error {
-	tx := db.Model(&product).Where("id = ?", id).Updates(product)
-	return tx.Error
+	old := Products{}
+	if err := db.First(&old, id).Error; err != nil {
+		return gorm.ErrRecordNotFound
+	}
+	return db.Model(&old).Updates(product).Error
 }
 
 func DeleteProduct(db *gorm.DB, id int) error {
