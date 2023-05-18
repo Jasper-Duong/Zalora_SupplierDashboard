@@ -7,10 +7,9 @@ import { useState } from 'react'
 
 import { getFilterOptions } from "../../services/filter";
 const ProductsTable = () => {
-  const [filterOptions, setFilterOptions] = useState([]);
-  const [filterValues, setFilterValues] = useState({});
+  const [filterOptions, setFilterOptions] = useState({});
 
-  const handleFilterDropdownOpenChange = async (visible, api) => {
+  const handleFilterDropdownOpenChange = async (visible, api, key) => {
     if (visible) {
       const options = await getFilterOptions(`${api}`);
       let filters = options.data
@@ -20,20 +19,30 @@ const ProductsTable = () => {
           "value": filter.name,
         }]
       ), [])
-      setFilterOptions(filters);
-    } else {
-      setFilterOptions([])
+      setFilterOptions({...filterOptions, [key]: filters});
     }
   }
 
-  const handleFilter = (value) => {
-    console.log("help")
-    /*setFilterValues(prevValues => ({
-      ...prevValues,
-      ["brand"]: [...(prevValues["brand"] || []), value],
-    }));*/
-    // return true or false to indicate whether the record should be included in the filtered result
-  };
+  const filterBox = ({ setSelectedKeys, confirm, selectedKeys, clearFilters }) => {
+    const handleSearch = (selectedKeys, confirm) => {
+      confirm();
+    };
+    
+    const handleInputChange = (event) => {
+      console.log(`Selected filter value: ${event.target.value}`);
+      setSelectedKeys(event.target.value ? [event.target.value] : []);
+    };
+    
+    return (
+      <div>
+        <Input
+          placeholder={`Search ${columns[0].title}`}
+          onPressEnter={() => handleSearch(selectedKeys, confirm)}
+          onChange={handleInputChange}
+        />
+        <Button onClick={clearFilters}>Reset</Button>
+      </div>)
+  }
 
   const columns = [
     {
@@ -48,9 +57,10 @@ const ProductsTable = () => {
       title: "Brand",
       dataIndex: "brand",
       key: "brand",
-      filters: filterOptions,
+      filters: filterOptions?.brand || [],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/brand"),
+      //filterDropdown: (props) => {console.log("cuu")},
+      onFilterDropdownOpenChange: (visible) => handleFilterDropdownOpenChange(visible, "products/attribute/brand", "brand"),
     },
     {
       title: "SKU",
@@ -69,17 +79,17 @@ const ProductsTable = () => {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: filterOptions,
+      filters: filterOptions?.color || [],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color"),
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color", "color"),
     },
     {
       title: "Suppliers",
       dataIndex: "suppliers",
       key: "suppliers",
-      filters: filterOptions,
+      filters: filterOptions?.suppliers || [],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name"),
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name", "suppliers"),
       render: (suppliers) => suppliers.length
     },
     Table.EXPAND_COLUMN,

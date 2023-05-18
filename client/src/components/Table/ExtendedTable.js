@@ -23,11 +23,11 @@ const ExtendedTable = (props) => {
     const [data, setData] = useState(props.data);
     const [tableParams, setTableParams] = useState({
         pagination: {
-        showQuickJumper: true,
-        pageSizeOptions: ["10", "50", "100"],
-        showSizeChanger: true,
-        current: 1,
-        pageSize: 10,
+            showQuickJumper: true,
+            pageSizeOptions: ["10", "50", "100"],
+            showSizeChanger: true,
+            current: 1,
+            pageSize: 10,
         },
         sorter: [],
     });
@@ -51,14 +51,6 @@ const ExtendedTable = (props) => {
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
-        const oldFilters = tableParams.filters ? tableParams.filters : {}
-        let newFilters = {}
-        Object.keys(filters).forEach(key => {
-            console.log(key, filters[key])
-            newFilters[key] = filters[key] ? filters[key] : oldFilters[key]
-        });
-        filters = {...newFilters}
-        console.log(newFilters)
         setTableParams({
             pagination,
             filters,

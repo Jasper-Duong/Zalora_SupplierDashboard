@@ -1,4 +1,4 @@
-import { Button, Space, Table } from "antd";
+import { Button, Space, Table, Input } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import AntdModal from "../Modals/AntdModal";
@@ -6,6 +6,37 @@ import EditSupplierBtn from "../EditSupplier/EditSupplierBtn";
 import EditSupplier from "../EditSupplier/EditSupplier";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
 
+const CustomFilterDropdown = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+  return (
+    <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <Input
+          placeholder={`Search `}
+          value={selectedKeys[0]}
+          onChange={(e) => {}}
+          onPressEnter={() => {}}
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {}}
+            //icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => {}}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+  )
+}
 const SuppliersTable = () => {
   const columns = [
     {
@@ -15,6 +46,7 @@ const SuppliersTable = () => {
       sorter: {
         multiple: 2,
       },
+      filterDropdown: CustomFilterDropdown
     },
     {
       title: "Email",
