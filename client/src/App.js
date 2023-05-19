@@ -1,13 +1,12 @@
-import './App.css';
-import { Banner } from './components/Banner/Banner'
-import { MainTabs } from './components/MainTabs/MainTabs';
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
+import Router from "./routes/index.routes";
 
 function App() {
   return (
-    <div className="App">
-      <Banner />   
-      <MainTabs />
-    </div>
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
   );
 }
 

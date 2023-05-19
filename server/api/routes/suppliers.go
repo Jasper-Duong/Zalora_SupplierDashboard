@@ -7,12 +7,16 @@ import (
 )
 
 func LoadSuppliersRoute(route *gin.RouterGroup) {
-	route.GET("/", handlers.GetSuppliersHandler)
-	route.POST("/", handlers.CreateSuppliersHandler)
-	route.PATCH("/:id", handlers.UpdateSuppliers)
-	route.DELETE("/:id", handlers.DeleteSupplier)
+	suppliersHandler := handlers.NewSuppliersHandler()
+	route.GET("/", suppliersHandler.GetSuppliers)
+	route.POST("/", suppliersHandler.CreateSupplier)
 
-	route.GET("/attribute/name", handlers.GetSuppliersName)
-	route.GET("/:id/stocks", handlers.GetSupplierStocks)
-	route.GET("/:id/addresses", handlers.GetSupplierAddresses)
+	route.GET("/:id", suppliersHandler.GetSupplierByID)
+	route.PUT("/:id", suppliersHandler.UpdateSupplier)
+	route.DELETE("/:id", suppliersHandler.DeleteSupplier)
+
+	route.GET("/attribute/name", suppliersHandler.GetSuppliersName)
+	route.GET("/:id/stocks", suppliersHandler.GetSupplierStocks)
+	route.GET("/:id/addresses", suppliersHandler.GetSupplierAddresses)
+	route.GET("/:id/products/missing", suppliersHandler.GetSupplierMissingProducts)
 }

@@ -1,120 +1,126 @@
-import { Button, Space } from "antd";
-import { EditFilled, DeleteFilled } from "@ant-design/icons";
+import { Button, Space, Table, Popconfirm, Input, message } from "antd";
+import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
-import AntdModal from "../Modals/AntdModal";
-import EditProduct from "../EditProduct/EditProduct";
 import EditProductBtn from "../EditProduct/EditProductBtn";
-import { useDispatch } from "react-redux";
-import { setSelectedProduct } from "../../store/actions/products.action";
+import HomeHeader from "../../layout/HomeLayout/HomeHeader";
+import { useState } from "react";
+
+import { getFilterOptions } from "../../services/filter";
+import { deleteProductApi } from "../../services/product";
+import CustomFilterDropdown from "./CustomFilterDropdown";
 
 const ProductsTable = () => {
-  const dispatch = useDispatch();
+  const [filterOptions, setFilterOptions] = useState([]);
+
+  const [isForceRender, setIsForceRender] = useState(false);
+  const forceRender = () => setIsForceRender((prev) => !prev);
+  const handleDeleteRecord = async (record) => {
+    try {
+      await deleteProductApi(record.id);
+      message.success(`Deleted ${record.name}`);
+      forceRender();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFilterDropdownOpenChange = async (visible, api, key) => {
+    if (visible) {
+      const options = await getFilterOptions(`${api}`);
+      let filters = options.data
+      filters = filters.reduce((accumulator, filter) => (
+        [...accumulator, {
+          "text": filter.name,
+          "value": filter.name,
+        }]
+      ), [])
+      setFilterOptions({...filterOptions, [key]: filters});
+    }
+  }
+
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: {
-        multiple: 2,
-      },
+      /*sorter: {
+        multiple: 1,
+      },*/
+      ...CustomFilterDropdown("name"),
     },
     {
       title: "Brand",
       dataIndex: "brand",
       key: "brand",
-      filters: [
-        { text: "Brand 1", value: "Brand 1" },
-        { text: "Brand 2", value: "Brand 2" },
-      ],
-      filterSearch: true,
+      ...CustomFilterDropdown("brand"),
     },
     {
       title: "SKU",
-      dataIndex: "SKU",
-      key: "SKU",
+      dataIndex: "sku",
+      key: "sku",
+      ...CustomFilterDropdown("sku"),
     },
     {
       title: "Size",
       dataIndex: "size",
       key: "size",
-      sorter: {
-        multiple: 3,
-      },
+      filters: filterOptions?.size || [],
+      filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => handleFilterDropdownOpenChange(visible, "products/attribute/size", "size"),
     },
     {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: [
-        { text: "Đen,", value: "Đen," },
-        { text: "Hồng", value: "Hồng" },
-      ],
+      filters: filterOptions?.color || [],
       filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color", "color"),
     },
     {
       title: "Suppliers",
       dataIndex: "suppliers",
       key: "suppliers",
-      filters: [
-        { text: "Supplier 1", value: "Supplier 1" },
-        { text: "Supplier 2", value: "Supplier 2" },
-      ],
+      //filters: filterOptions?.suppliers || [],
       filterSearch: true,
-      render: (suppliers) => {
-        return (
-          <>
-            {suppliers.map((supplier) => (
-              <p key={supplier}>{supplier.toUpperCase()}</p>
-            ))}
-          </>
-        );
-      },
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name", "suppliers"),
+      render: (suppliers) => suppliers.length
     },
-    /*
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            filters: [      
-                { text: 'Active', value: true, },     
-                { text: 'Not active', value: false, }, 
-            ],
-            render: (status) => (
-                status ? "Active" : "Not active"
-            ),
-        },*/
+    Table.EXPAND_COLUMN,
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
-      sorter: {
-        multiple: 1,
-      },
+      /*sorter: {
+        multiple: 2,
+      },*/
     },
     {
       align: "center",
       key: "action",
       render: (_, record) => {
-        // console.log(record);
-        dispatch(setSelectedProduct(record));
         return (
           <Space wrap>
-            <AntdModal
-              ShowModalBtn={EditProductBtn}
-              title="Edit Product"
-              BodyComponent={EditProduct}
-              data={record}
-            />
-
-            <Button type="primary" icon={<DeleteFilled />} danger />
+            <EditProductBtn data={record} />
+            <Popconfirm
+              title={"Sure to delete?"}
+              onConfirm={() => handleDeleteRecord(record)}
+            >
+              <Button type="primary" icon={<DeleteFilled />} danger />
+            </Popconfirm>
           </Space>
         );
       },
     },
   ];
-
   return (
-    <ExtendedTable columns={columns} resource={"products"}></ExtendedTable>
+    <>
+      <HomeHeader title={"Product Table"} />
+      <ExtendedTable
+        isForceRender={isForceRender}
+        columns={columns}
+        resource={"products"}
+      ></ExtendedTable>
+    </>
   );
 };
 

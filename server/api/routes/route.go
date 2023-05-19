@@ -10,5 +10,6 @@ func LoadRoutes(r *gin.Engine) {
 		LoadProductsRoute(superGroup.Group("/products"))
 		LoadSuppliersRoute(superGroup.Group("/suppliers"))
 		LoadProductsSuppliersRoute(superGroup.Group("/products-suppliers"))
+		LoadAddressesRoute(superGroup.Group("/addresses"))
 	}
 }

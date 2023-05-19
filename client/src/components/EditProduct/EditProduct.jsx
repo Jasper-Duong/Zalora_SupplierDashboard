@@ -1,17 +1,15 @@
 import React from "react";
-// import { products } from "../../mockdata/products";
-import { productToFormValue } from "../../utils/products";
-import { useSelector } from "react-redux";
-import EditProductForm from "../Forms/Product/EditProductForm";
+import HomeHeader from "../../layout/HomeLayout/HomeHeader";
+import ProductTabs from "../Tabs/ProductTabs/ProductTabs";
+import FormContainer from "../Container/FormContainer";
 
-export default function EditProduct({ closeModal }) {
-  const { selectedProduct } = useSelector((state) => state.productReducer);
+export default function EditProduct() {
   return (
-    <div>
-      <EditProductForm
-        closeModal={closeModal}
-        product={productToFormValue(selectedProduct)}
-      />
-    </div>
+    <>
+      <HomeHeader title={"Edit Product"} />
+      <FormContainer>
+        <ProductTabs />
+      </FormContainer>
+    </>
   );
 }

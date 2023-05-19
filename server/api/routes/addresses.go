@@ -7,8 +7,9 @@ import (
 )
 
 func LoadAddressesRoute(route *gin.RouterGroup) {
-	route.GET("/", handlers.GetAddresses)
-	route.POST("/", handlers.CreateAddress)
-	route.PUT("/:id", handlers.UpdateAddress)
-	route.DELETE("/:id", handlers.DeleteAddress)
+	addressesHandler := handlers.NewAddressesHandler()
+	route.GET("/", addressesHandler.GetAddresses)
+	route.POST("/", addressesHandler.CreateAddress)
+	route.PUT("/:id", addressesHandler.UpdateAddress)
+	route.DELETE("/:id", addressesHandler.DeleteAddress)
 }

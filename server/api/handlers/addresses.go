@@ -1,87 +1,67 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 	"server/internal/models"
 	"server/internal/services"
-	"server/utils"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func GetAddresses(c *gin.Context) {
+type AddressesHandler struct {
+	BaseHandler
+}
+
+func NewAddressesHandler() *AddressesHandler {
+	return &AddressesHandler{}
+}
+
+func (h *AddressesHandler) GetAddresses(c *gin.Context) {
 	address := models.GetAddresses()
 	c.JSON(http.StatusOK, address)
 }
 
-func CreateAddress(c *gin.Context) {
+func (h *AddressesHandler) CreateAddress(c *gin.Context) {
 	var address models.AddressCreate
 	// Bind req.Body -> address & validate required fields
-	if err := utils.ValidateInput(&address, c); err != nil {
+	if err := h.validateInput(c, &address); err != nil {
 		return
 	}
 
 	// Call service -> CreateAddress
 	if err := services.CreateAddress(&address); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		h.handleError(c, err)
 	}
+
 	// Return response with statusCreated & data
-	c.Status(http.StatusCreated)
+	h.handleSuccessCreate(c)
 }
 
-func UpdateAddress(c *gin.Context) {
+func (h *AddressesHandler) UpdateAddress(c *gin.Context) {
 	var address models.AddressUpdate
-	if err := utils.ValidateInput(&address, c); err != nil {
+	if err := h.validateInput(c, &address); err != nil {
 		return
 	}
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
 		return
 	}
 
 	if err := services.UpdateAddress(&address, id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
+		h.handleError(c, err)
 	}
-	c.Status(http.StatusOK)
+	h.handleSuccessCreate(c)
 }
 
-func DeleteAddress(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+func (h *AddressesHandler) DeleteAddress(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
 		return
 	}
 
 	if err := services.DeleteAddress(id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
+		h.handleError(c, err)
 	}
 	c.Status(http.StatusOK)
 
