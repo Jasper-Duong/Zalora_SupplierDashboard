@@ -1,19 +1,36 @@
-import { useState, useEffect } from 'react'
-import { Table } from 'antd'
-import axios from 'axios'
-import qs from 'qs';
+import { useState, useEffect } from "react";
+import { Table, Tag, Select } from "antd";
+import qs from "qs";
+import { request } from "../../config/axios";
+
+const ExpandedAddresses = (record) => (
+    record.addresses.map(address => (
+        <p key={address.id}>{address.address_info}</p>
+    ))
+)
+
+const ExpandedSuppliers = (record) => (
+    record.suppliers.map(supplier => (
+        <Tag key={supplier.id}>{supplier.name} : {supplier.stock}</Tag>
+    ))
+)
+
+const isRowExpandable = (record, resource) => (
+    (resource === 'products' && record.suppliers.length > 0) || (resource === 'suppliers' && record.addresses.length > 0) ? true : false
+)
 
 const ExtendedTable = (props) => {
-    const [data, setData] = useState(props.data)
+    const [data, setData] = useState(props.data);
     const [tableParams, setTableParams] = useState({
         pagination: {
             showQuickJumper: true,
-            pageSizeOptions: ['10', '50', '100'],
+            pageSizeOptions: ["10", "50", "100"],
             showSizeChanger: true,
             current: 1,
-            pageSize: 50, 
+            pageSize: 10,
         },
-        sorter: []
+        sorter: [],
+        status: "true"
     });
 
     const getQueryParams = (params) => {
@@ -27,8 +44,9 @@ const ExtendedTable = (props) => {
         return ({
             page: params.pagination?.current,
             limit: params.pagination?.pageSize,
+            status: params.status,
             sort: params.sorter.map(sort => sort.columnKey),
-            order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
+            //order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
             ...filters
         })
     }
@@ -37,22 +55,29 @@ const ExtendedTable = (props) => {
         setTableParams({
             pagination,
             filters,
-            sorter: Array.isArray(sorter) ?  sorter : [sorter]
-        })
+            sorter: Array.isArray(sorter) ? sorter : [sorter],
+            status: tableParams.status
+        });
     }
+
+    const handleStatusChange = (value) => {
+        setTableParams({
+            ...tableParams,
+            status: value
+        });
+      };
+
 
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log(tableParams.filters)
-                const res = await axios.get(`https://644f18eaba9f39c6ab5d2217.mockapi.io/${props.resource}?${decodeURIComponent(qs.stringify(getQueryParams(tableParams), { arrayFormat: 'brackets' }))}`)
-                //const res = await axios.get(`http://localhost:4000/products?${qs.stringify(getQueryParams(tableParams), { arrayFormat: 'comma' }).replace(/%2C/g, ',')}`)
-                setData(res.data)
+                const res = await request.get(`${props.resource}/?${decodeURIComponent(qs.stringify(getQueryParams(tableParams), { arrayFormat: 'brackets' }))}`)
+                setData(res.data[`${props.resource}`])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams.pagination,
-                        total: 200, 
+                        total: res.data.total, 
                     }
                 })
             } catch (err) {
@@ -60,17 +85,33 @@ const ExtendedTable = (props) => {
             }
         }
         fetchData()
-    }, [JSON.stringify(tableParams)])
+    }, [JSON.stringify(tableParams), props.isForceRender])
 
     return (
+        <>
+        <Select
+          size={"large"}
+          defaultValue="true"
+          style={{ width: 120 }}
+          onChange={handleStatusChange}
+          options={[
+            {value: "true", label: "Active"},
+            {value: "false", label: "Not Active"}
+          ]}
+        />
         <Table 
             dataSource={data} 
             columns={props.columns}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowKey = "id"
+            expandable={{
+                expandedRowRender: props.resource === 'products' ? ExpandedSuppliers : ExpandedAddresses,
+                rowExpandable: (record) => isRowExpandable(record, props.resource)
+            }}
         ></Table>
-    )
-}
+        </>
+  );
+};
 
-export default ExtendedTable
+export default ExtendedTable;

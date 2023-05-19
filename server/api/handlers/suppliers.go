@@ -1,97 +1,135 @@
 package handlers
 
 import (
-	"errors"
-	"net/http"
 	"server/internal/models"
 	"server/internal/services"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func GetSuppliersHandler(c *gin.Context) {
+type SuppliersHandler struct {
+	BaseHandler
+}
+
+func NewSuppliersHandler() *SuppliersHandler {
+	return &SuppliersHandler{}
+}
+
+func (h *SuppliersHandler) GetSuppliers(c *gin.Context) {
 	var query models.SuppliersQueryParam
 	c.ShouldBindQuery(&query)
 	suppliers, total, err := services.GetSuppliers(&query)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
 
-	res := gin.H{
+	h.handleSuccessGet(c, map[string]interface{}{
 		"suppliers": suppliers,
 		"total":     total,
-	}
-	c.JSON(http.StatusOK, res)
+	})
 }
 
-func CreateSuppliersHandler(c *gin.Context) {
+func (h *SuppliersHandler) CreateSupplier(c *gin.Context) {
 	var supplier models.Suppliers
-	if err := c.ShouldBindJSON(&supplier); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := h.validateInput(c, &supplier); err != nil {
 		return
 	}
+
 	if err := services.CreateSupplier(&supplier); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
-	c.Status(http.StatusCreated)
+	h.handleSuccessCreate(c)
 }
 
-func UpdateSuppliers(c *gin.Context) {
+func (h *SuppliersHandler) UpdateSupplier(c *gin.Context) {
 	var supplier models.Suppliers
-	if err := c.ShouldBindJSON(&supplier); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := h.validateInput(c, &supplier); err != nil {
 		return
 	}
-	id := c.Param("id")
-
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
+		return
+	}
 	if err := services.UpdateSupplier(&supplier, id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
-	c.Status(http.StatusOK)
+	h.handleSuccessUpdate(c)
 }
 
-func DeleteSupplier(c *gin.Context) {
-	id := c.Param("id")
+func (h *SuppliersHandler) DeleteSupplier(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
+		return
+	}
 
 	if err := services.DeleteSupplier(id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
-	c.Status(http.StatusOK)
+	h.handleSuccessDelete(c)
 }
 
-func GetSuppliersName(c *gin.Context) {
+func (h *SuppliersHandler) GetSuppliersName(c *gin.Context) {
 	names, err := services.GetSuppliersName()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, names)
+	h.handleSuccessGet(c, &names)
 }
 
-func GetSupplierAddresses(c *gin.Context) {
-	id := c.Param("id")
-	addresses, err := services.GetSupplierAddresses(id)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+func (h *SuppliersHandler) GetSupplierByID(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
 		return
 	}
-	c.JSON(http.StatusOK, addresses)
+	supplier, err := services.GetSupplierByID(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+	h.handleSuccessGet(c, &supplier)
+}
 
+func (h *SuppliersHandler) GetSupplierStocks(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
+		return
+	}
+	stocks, err := services.GetSupplierStocks(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+	h.handleSuccessGet(c, stocks)
+
+}
+
+func (h *SuppliersHandler) GetSupplierAddresses(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
+		return
+	}
+	addresses, err := services.GetSupplierAddresses(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+	h.handleSuccessGet(c, addresses)
+}
+
+func (h *SuppliersHandler) GetSupplierMissingProducts(c *gin.Context) {
+	id := h.parseId(c, c.Param("id"))
+	if id == 0 {
+		return
+	}
+	products, err := services.GetSupplierMissingProducts(id)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+	h.handleSuccessGet(c, products)
 }

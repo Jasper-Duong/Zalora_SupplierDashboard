@@ -1,12 +1,10 @@
-import React from "react";
 import SupplierTabs from "../Tabs/SupplierTabs/SupplierTabs";
-import { useSelector } from "react-redux";
+import FormContainer from "../Container/FormContainer";
 
-export default function EditSupplier({ closeModal }) {
-  const { selectedSupplier } = useSelector((state) => state.supplierReducer);
+export default function EditSupplier() {
   return (
-    <div>
-      <SupplierTabs closeModal={closeModal} supplier={selectedSupplier} />
-    </div>
+    <FormContainer>
+      <SupplierTabs  />
+    </FormContainer>
   );
 }

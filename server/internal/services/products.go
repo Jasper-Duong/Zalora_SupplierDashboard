@@ -3,12 +3,11 @@ package services
 import (
 	"server/db"
 	"server/internal/models"
+	"server/internal/utils"
 	"strconv"
-
-	"server/utils"
 )
 
-func GetSuppliersByProductID(id string) ([]map[string]interface{}, error) {
+var GetSuppliersByProductID = func(id string) ([]map[string]interface{}, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, err
@@ -16,7 +15,7 @@ func GetSuppliersByProductID(id string) ([]map[string]interface{}, error) {
 	return models.GetSuppliersByProductID(db.DB, uint32(idInt))
 }
 
-func GetProducts(query *models.QueryParams) ([]models.ProductsWithSuppliers, int64, error) {
+var GetProducts = func(query *models.ProductsQueryParams) ([]models.ProductsWithSuppliers, uint32, error) {
 	products, total, err := models.GetProducts(db.DB, query)
 	if err != nil {
 		return nil, 0, err
@@ -36,40 +35,38 @@ func GetProducts(query *models.QueryParams) ([]models.ProductsWithSuppliers, int
 	return productsWithSuppliers, total, nil
 }
 
-func GetProductByID(id string) (models.Products, error) {
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		return models.Products{}, err
-	}
-	return models.SelectProductByID(db.DB, idInt)
+var GetProductByID = func(id uint32) (models.Products, error) {
+	return models.GetProductByID(db.DB, id)
 }
 
-func CreateProduct(product *models.Products) error {
+var CreateProduct = func(product *models.Products) error {
 	product.Sku = utils.SkuGenerator(product)
 	return models.CreateProduct(db.DB, product)
 }
 
-func UpdateProduct(product *models.Products, id string) error {
-	product.Sku = utils.SkuGenerator(product)
-	idInt, err := strconv.Atoi(id)
+var UpdateProduct = func(product *models.Products, id uint32) error {
+	_, err := models.GetProductByID(db.DB, id)
 	if err != nil {
 		return err
 	}
-	return models.UpdateProduct(db.DB, product, idInt)
+	product.ID = id
+	return models.UpdateProduct(db.DB, product, id)
 }
 
-func DeleteProduct(id string) error {
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		return err
-	}
-	err = models.DeleteStockByProductID(db.DB, uint32(idInt))
-	if err != nil {
-		return err
-	}
-	return models.DeleteProduct(db.DB, idInt)
+var DeleteProduct = func(id uint32) error {
+	return models.DeleteProduct(db.DB, id)
 }
 
-func GetAttributeOfProducts(attribute string) ([]string, error) {
-	return models.GetAttributeOfProducts(db.DB, attribute)
+var GetAttributeOfProducts = func(attribute string) ([]map[string]interface{}, error) {
+	values, err := models.GetAttributeOfProducts(db.DB, attribute)
+	if err != nil {
+		return make([]map[string]interface{}, 0), err
+	}
+	var attributeList []map[string]interface{}
+	for _, value := range values {
+		attributeList = append(attributeList, map[string]interface{}{
+			"name": value,
+		})
+	}
+	return attributeList, nil
 }
