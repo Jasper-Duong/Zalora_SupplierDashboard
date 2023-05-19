@@ -1,10 +1,11 @@
-import { Button, Popconfirm, Space, Table, message } from "antd";
-import { DeleteFilled, EditOutlined } from "@ant-design/icons";
+import { Button, Popconfirm, Space, Table, Input, message } from "antd";
+import { DeleteFilled, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { deleteSupplierApi } from "../../services/supplier";
+import CustomFilterDropdown from "./CustomFilterDropdown";
 
 const SuppliersTable = () => {
   const [isForceRender, setIsForceRender] = useState(false);
@@ -23,27 +24,30 @@ const SuppliersTable = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: {
-        multiple: 2,
-      },
+      /*sorter: {
+        multiple: 1,
+      },*/
+      ...CustomFilterDropdown("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      ...CustomFilterDropdown("email"),
     },
     {
       title: "Contact Number",
       dataIndex: "contact_number",
       key: "contact_number",
+      ...CustomFilterDropdown("contact_number")
     },
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
-      sorter: {
+      /*sorter: {
         multiple: 1,
-      },
+      },*/
     },
     Table.EXPAND_COLUMN,
     {
@@ -59,7 +63,7 @@ const SuppliersTable = () => {
       key: "action",
       render: (_, record) => (
         <Space wrap>
-          <Link to={`/products/edit/${record.id}`}>
+          <Link to={`/suppliers/edit/${record.id}`}>
             <Button type="primary" icon={<EditOutlined />} />
           </Link>
           <Popconfirm

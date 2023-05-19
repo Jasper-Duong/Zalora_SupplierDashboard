@@ -1,4 +1,4 @@
-import { Button, Space, Table, Popconfirm, message } from "antd";
+import { Button, Space, Table, Popconfirm, Input, message } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import EditProductBtn from "../EditProduct/EditProductBtn";
@@ -7,9 +7,11 @@ import { useState } from "react";
 
 import { getFilterOptions } from "../../services/filter";
 import { deleteProductApi } from "../../services/product";
+import CustomFilterDropdown from "./CustomFilterDropdown";
+
 const ProductsTable = () => {
   const [filterOptions, setFilterOptions] = useState([]);
-  // const [filterValues, setFilterValues] = useState({});
+
   const [isForceRender, setIsForceRender] = useState(false);
   const forceRender = () => setIsForceRender((prev) => !prev);
   const handleDeleteRecord = async (record) => {
@@ -22,109 +24,75 @@ const ProductsTable = () => {
     }
   };
 
-  const handleFilterDropdownOpenChange = async (visible, api) => {
+  const handleFilterDropdownOpenChange = async (visible, api, key) => {
     if (visible) {
       const options = await getFilterOptions(`${api}`);
-      let filters = options.data;
-      filters = filters.reduce(
-        (accumulator, filter) => [
-          ...accumulator,
-          {
-            text: filter.name,
-            value: filter.name,
-          },
-        ],
-        []
-      );
-      setFilterOptions(filters);
-    } else {
-      setFilterOptions([]);
+      let filters = options.data
+      filters = filters.reduce((accumulator, filter) => (
+        [...accumulator, {
+          "text": filter.name,
+          "value": filter.name,
+        }]
+      ), [])
+      setFilterOptions({...filterOptions, [key]: filters});
     }
-  };
-
-  // const handleFilter = (value) => {
-  //   console.log("help");
-  //   /*setFilterValues(prevValues => ({
-  //     ...prevValues,
-  //     ["brand"]: [...(prevValues["brand"] || []), value],
-  //   }));*/
-  //   // return true or false to indicate whether the record should be included in the filtered result
-  // };
+  }
 
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      sorter: {
-        multiple: 2,
-      },
+      /*sorter: {
+        multiple: 1,
+      },*/
+      ...CustomFilterDropdown("name"),
     },
     {
       title: "Brand",
       dataIndex: "brand",
       key: "brand",
-      filters: filterOptions,
-      filterSearch: true,
-      onFilterDropdownOpenChange: (visible) =>
-        visible &&
-        handleFilterDropdownOpenChange(visible, "products/attribute/brand"),
+      ...CustomFilterDropdown("brand"),
     },
     {
       title: "SKU",
       dataIndex: "sku",
       key: "sku",
+      ...CustomFilterDropdown("sku"),
     },
     {
       title: "Size",
       dataIndex: "size",
       key: "size",
-      sorter: {
-        multiple: 3,
-      },
+      filters: filterOptions?.size || [],
+      filterSearch: true,
+      onFilterDropdownOpenChange: (visible) => handleFilterDropdownOpenChange(visible, "products/attribute/size", "size"),
     },
     {
       title: "Color",
       dataIndex: "color",
       key: "color",
-      filters: filterOptions,
+      filters: filterOptions?.color || [],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) =>
-        visible &&
-        handleFilterDropdownOpenChange(visible, "products/attribute/color"),
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "products/attribute/color", "color"),
     },
     {
       title: "Suppliers",
       dataIndex: "suppliers",
       key: "suppliers",
-      filters: filterOptions,
+      //filters: filterOptions?.suppliers || [],
       filterSearch: true,
-      onFilterDropdownOpenChange: (visible) =>
-        visible &&
-        handleFilterDropdownOpenChange(visible, "suppliers/attribute/name"),
-      render: (suppliers) => suppliers.length,
+      onFilterDropdownOpenChange: (visible) => visible && handleFilterDropdownOpenChange(visible, "suppliers/attribute/name", "suppliers"),
+      render: (suppliers) => suppliers.length
     },
     Table.EXPAND_COLUMN,
-    /*
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            filters: [      
-                { text: 'Active', value: true, },     
-                { text: 'Not active', value: false, }, 
-            ],
-            render: (status) => (
-                status ? "Active" : "Not active"
-            ),
-        },*/
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
-      sorter: {
-        multiple: 1,
-      },
+      /*sorter: {
+        multiple: 2,
+      },*/
     },
     {
       align: "center",

@@ -11,7 +11,7 @@ type Suppliers struct {
 	ID            uint32 `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	Name          string `gorm:"column:name;not null;unique" json:"name" binding:"required"`
 	Email         string `gorm:"column:email;not null;unique" json:"email" binding:"required,email"`
-	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required,e164"`
+	ContactNumber string `gorm:"column:contact_number;not null" json:"contact_number" binding:"required"`
 	Status        *bool  `gorm:"column:status;default:true" json:"status"`
 	Stock         uint32 `gorm:"column:stock;default:0" json:"stock"`
 }
@@ -22,30 +22,32 @@ type SupplierWithAddresses struct {
 }
 
 type SuppliersQueryParam struct {
-	Page           int      `form:"page"`
-	Limit          int      `form:"limit"`
-	Name           []string `form:"name[]"`
-	Email          []string `form:"email[]"`
-	Contact_number []string `form:"contact_number[]"`
+	Status         bool   `form:"status"`
+	Page           int    `form:"page"`
+	Limit          int    `form:"limit"`
+	Name           string `form:"name[]"`
+	Email          string `form:"email[]"`
+	Contact_Number string `form:"contact_number[]"`
 }
 
 func GetSuppliers(db *gorm.DB, query *SuppliersQueryParam) ([]Suppliers, uint32, error) {
 	var suppliers []Suppliers
-
-	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
+	db = db.Where("status = ?", query.Status)
 
 	t := reflect.TypeOf(query).Elem()
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		//fieldType := field.Type
-		fieldName := field.Name
-		fieldValue := reflect.ValueOf(query).Elem().Field(i)
-		if fieldName == "Page" || fieldName == "Limit" {
+		name := field.Name
+		value := reflect.ValueOf(query).Elem().Field(i)
+		if name == "Page" || name == "Limit" || name == "Status" {
 			continue
 		}
-		if fieldValue.Len() > 0 {
-			db = db.Where(strings.ToLower(fieldName)+" IN ?", fieldValue.Interface())
+		if value.Kind() == reflect.Slice && value.Len() > 0 {
+			db = db.Where(strings.ToLower(name)+" IN ?", value.Interface())
+		} else if value.Kind() != reflect.Slice && value.String() != "" {
+			db = db.Where(strings.ToLower(name)+" LIKE ?", "%"+value.String()+"%")
 		}
 	}
 
@@ -89,14 +91,11 @@ func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
 }
 
 func UpdateSupplier(db *gorm.DB, supplier *Suppliers) error {
-	tx := db.Updates(&supplier)
-	if tx.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
-	}
+	db.Updates(&supplier)
 	return nil
 }
 
-func DeleteSupplier(db *gorm.DB, id uint64) error {
+func DeleteSupplier(db *gorm.DB, id uint32) error {
 	tx := db.Delete(&Suppliers{}, id)
 	if tx.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound

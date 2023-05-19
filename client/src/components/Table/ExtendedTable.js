@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Tag } from "antd";
+import { Table, Tag, Select } from "antd";
 import qs from "qs";
 import { request } from "../../config/axios";
 
@@ -23,15 +23,15 @@ const ExtendedTable = (props) => {
     const [data, setData] = useState(props.data);
     const [tableParams, setTableParams] = useState({
         pagination: {
-        showQuickJumper: true,
-        pageSizeOptions: ["10", "50", "100"],
-        showSizeChanger: true,
-        current: 1,
-        pageSize: 10,
+            showQuickJumper: true,
+            pageSizeOptions: ["10", "50", "100"],
+            showSizeChanger: true,
+            current: 1,
+            pageSize: 10,
         },
         sorter: [],
+        status: "true"
     });
-
 
     const getQueryParams = (params) => {
         let filters = {}
@@ -44,27 +44,28 @@ const ExtendedTable = (props) => {
         return ({
             page: params.pagination?.current,
             limit: params.pagination?.pageSize,
+            status: params.status,
             sort: params.sorter.map(sort => sort.columnKey),
-            order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
+            //order: params.sorter.map(sort => sort.order === 'ascend' ? 'asc' : 'desc'),
             ...filters
         })
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
-        const oldFilters = tableParams.filters ? tableParams.filters : {}
-        let newFilters = {}
-        Object.keys(filters).forEach(key => {
-            console.log(key, filters[key])
-            newFilters[key] = filters[key] ? filters[key] : oldFilters[key]
-        });
-        filters = {...newFilters}
-        console.log(newFilters)
         setTableParams({
             pagination,
             filters,
             sorter: Array.isArray(sorter) ? sorter : [sorter],
+            status: tableParams.status
         });
     }
+
+    const handleStatusChange = (value) => {
+        setTableParams({
+            ...tableParams,
+            status: value
+        });
+      };
 
 
     useEffect(() => {
@@ -87,6 +88,17 @@ const ExtendedTable = (props) => {
     }, [JSON.stringify(tableParams), props.isForceRender])
 
     return (
+        <>
+        <Select
+          size={"large"}
+          defaultValue="true"
+          style={{ width: 120 }}
+          onChange={handleStatusChange}
+          options={[
+            {value: "true", label: "Active"},
+            {value: "false", label: "Not Active"}
+          ]}
+        />
         <Table 
             dataSource={data} 
             columns={props.columns}
@@ -97,7 +109,8 @@ const ExtendedTable = (props) => {
                 expandedRowRender: props.resource === 'products' ? ExpandedSuppliers : ExpandedAddresses,
                 rowExpandable: (record) => isRowExpandable(record, props.resource)
             }}
-    ></Table>
+        ></Table>
+        </>
   );
 };
 
