@@ -1,4 +1,3 @@
-import React from "react";
 import SupplierTabs from "../Tabs/SupplierTabs/SupplierTabs";
 import FormContainer from "../Container/FormContainer";
 
