@@ -10,6 +10,31 @@ func GetProductStocks(id uint32) ([]map[string]interface{}, error) {
 	return stocks, err
 }
 
+func GetSupplierStocks(id uint32) ([]map[string]interface{}, error) {
+	stocks, err := models.GetProductsBySupplierID(db.DB, uint32(id))
+	return stocks, err
+}
+
+func GetSupplierMissingProducts(id uint32) ([]map[string]interface{}, error) {
+	products, err := models.GetProductsBySupplierID(db.DB, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []uint32 = make([]uint32, 0)
+	ids = append(ids, 0)
+	for _, product := range products {
+		ids = append(ids, product["id"].(uint32))
+	}
+
+	missing, err := models.GetSupplierMissingProducts(db.DB, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return missing, nil
+}
+
 func GetProductMissingSuppliers(id uint32) ([]map[string]interface{}, error) {
 	suppliers, err := models.GetSuppliersByProductID(db.DB, id)
 	if err != nil {
@@ -28,11 +53,6 @@ func GetProductMissingSuppliers(id uint32) ([]map[string]interface{}, error) {
 	}
 
 	return missing, nil
-}
-
-func GetSupplierStocks(id uint32) ([]map[string]interface{}, error) {
-	stocks, err := models.GetSuppliersByProductID(db.DB, uint32(id))
-	return stocks, err
 }
 
 func CreateStock(stock models.StockRequest) error {
