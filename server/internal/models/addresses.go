@@ -44,6 +44,12 @@ func GetAddresses() Addresses {
 	return address
 }
 
+func GetAddressByID(db *gorm.DB, id uint32) (Addresses, error) {
+	var address Addresses
+	err := db.First(&address, id).Error
+	return address, err
+}
+
 func CreateAddress(db *gorm.DB, data *AddressCreate) error {
 	return db.Create(&data).Error
 }
