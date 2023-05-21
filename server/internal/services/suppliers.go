@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"server/db"
 	"server/internal/models"
 )
@@ -57,10 +56,10 @@ func GetSupplierAddresses(id uint32) ([]map[string]interface{}, error) {
 	return models.GetAddressesBySupplierID(db.DB, id)
 }
 
-func GetSupplierMissingProducts(id uint32) ([]map[string]interface{}, error) {
+/*func GetSupplierMissingProducts(id uint32) ([]map[string]interface{}, error) {
 	var products []map[string]interface{}
-	if products, err := models.GetMissingProductsBySupplierID(db.DB, id); err != nil {
+	if products, err := models.GetSupplierMissingProducts(db.DB, id); err != nil {
 		fmt.Println(products)
 	}
 	return products, nil
-}
+}*/
