@@ -84,10 +84,7 @@ func GetSuppliersByProductID(db *gorm.DB, id uint32) ([]map[string]interface{}, 
 }
 
 func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
-	if err := db.Create(&supplier).Error; err != nil {
-		return err
-	}
-	return nil
+	return db.Create(supplier).Error
 }
 
 func UpdateSupplier(db *gorm.DB, supplier *Suppliers) error {

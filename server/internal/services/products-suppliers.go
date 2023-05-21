@@ -10,12 +10,12 @@ func GetProductStocks(id uint32) ([]map[string]interface{}, error) {
 	return stocks, err
 }
 
-func GetSupplierStocks(id uint32) ([]map[string]interface{}, error) {
+var GetSupplierStocks = func(id uint32) ([]map[string]interface{}, error) {
 	stocks, err := models.GetProductsBySupplierID(db.DB, uint32(id))
 	return stocks, err
 }
 
-func GetSupplierMissingProducts(id uint32) ([]map[string]interface{}, error) {
+var GetSupplierMissingProducts = func(id uint32) ([]map[string]interface{}, error) {
 	products, err := models.GetProductsBySupplierID(db.DB, id)
 	if err != nil {
 		return nil, err

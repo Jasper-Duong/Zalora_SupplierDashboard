@@ -27,7 +27,7 @@ type ProductsQueryParams struct {
 	Page   int      `form:"page"`
 	Limit  int      `form:"limit"`
 	Status bool     `form:"status"`
-	Name   string   `form:"name"`
+	Name   string   `form:"name[]"`
 	Brand  string   `form:"brand[]"`
 	SKU    string   `form:"sku[]"`
 	Size   []string `form:"size[]"`
@@ -68,7 +68,7 @@ func GetProducts(db *gorm.DB, query *ProductsQueryParams) ([]Products, uint32, e
 func GetProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
 	var products []map[string]interface{} = make([]map[string]interface{}, 0)
 	err := db.Model(&Products{}).
-		Select("products.id, products.name").
+		Select("products.id, products.name, products_suppliers.stock").
 		Joins("left join products_suppliers on products_suppliers.product_id = products.id").
 		Where("products_suppliers.supplier_id = ?", id).
 		Distinct().
