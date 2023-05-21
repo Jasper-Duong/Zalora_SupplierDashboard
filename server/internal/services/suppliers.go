@@ -5,7 +5,7 @@ import (
 	"server/internal/models"
 )
 
-func GetSuppliers(query *models.SuppliersQueryParam) ([]models.SupplierWithAddresses, uint32, error) {
+var GetSuppliers = func(query *models.SuppliersQueryParam) ([]models.SupplierWithAddresses, uint32, error) {
 	suppliers, total, err := models.GetSuppliers(db.DB, query)
 	if err != nil {
 		return nil, 0, err
@@ -24,11 +24,11 @@ func GetSuppliers(query *models.SuppliersQueryParam) ([]models.SupplierWithAddre
 	return suppliersWithAddresses, total, err
 }
 
-func CreateSupplier(supplier *models.Suppliers) error {
+var CreateSupplier = func(supplier *models.Suppliers) error {
 	return models.CreateSupplier(db.DB, supplier)
 }
 
-func UpdateSupplier(supplier *models.Suppliers, id uint32) error {
+var UpdateSupplier = func(supplier *models.Suppliers, id uint32) error {
 	_, err := models.GetSupplierByID(db.DB, id)
 	if err != nil {
 		return err
@@ -37,19 +37,19 @@ func UpdateSupplier(supplier *models.Suppliers, id uint32) error {
 	return models.UpdateSupplier(db.DB, supplier)
 }
 
-func DeleteSupplier(id uint32) error {
+var DeleteSupplier = func(id uint32) error {
 	return models.DeleteSupplier(db.DB, id)
 }
 
-func GetSupplierByID(id uint32) (models.Suppliers, error) {
+var GetSupplierByID = func(id uint32) (models.Suppliers, error) {
 	return models.GetSupplierByID(db.DB, id)
 }
 
-func GetSuppliersName() ([]map[string]interface{}, error) {
+var GetSuppliersName = func() ([]map[string]interface{}, error) {
 	return models.GetSuppliersAttribute(db.DB, "name")
 }
 
-func GetSupplierAddresses(id uint32) ([]map[string]interface{}, error) {
+var GetSupplierAddresses = func(id uint32) ([]map[string]interface{}, error) {
 	if _, err := models.GetSupplierByID(db.DB, id); err != nil {
 		return make([]map[string]interface{}, 0), err
 	}
