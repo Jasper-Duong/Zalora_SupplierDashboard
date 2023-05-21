@@ -5,7 +5,7 @@ import (
 	"server/internal/models"
 )
 
-func GetProductStocks(id uint32) ([]map[string]interface{}, error) {
+var GetProductStocks = func(id uint32) ([]map[string]interface{}, error) {
 	stocks, err := models.GetSuppliersByProductID(db.DB, uint32(id))
 	return stocks, err
 }
@@ -35,7 +35,7 @@ var GetSupplierMissingProducts = func(id uint32) ([]map[string]interface{}, erro
 	return missing, nil
 }
 
-func GetProductMissingSuppliers(id uint32) ([]map[string]interface{}, error) {
+var GetProductMissingSuppliers = func(id uint32) ([]map[string]interface{}, error) {
 	suppliers, err := models.GetSuppliersByProductID(db.DB, id)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func GetProductMissingSuppliers(id uint32) ([]map[string]interface{}, error) {
 	return missing, nil
 }
 
-func CreateStock(stock models.StockRequest) error {
+var CreateStock = func(stock models.StockRequest) error {
 	product_supplier := &models.ProductsSuppliers{
 		ProductID:  stock.ProductID,
 		SupplierID: stock.SupplierID,
@@ -64,10 +64,10 @@ func CreateStock(stock models.StockRequest) error {
 	return models.CreateStock(db.DB, product_supplier)
 }
 
-func UpdateStock(stock models.StockRequest) error {
+var UpdateStock = func(stock models.StockRequest) error {
 	return models.UpdateStock(db.DB, stock.ProductID, stock.SupplierID, stock.Stock)
 }
 
-func DeleteStock(product_id uint32, supplier_id uint32) error {
+var DeleteStock = func(product_id uint32, supplier_id uint32) error {
 	return models.DeleteStock(db.DB, product_id, supplier_id)
 }
