@@ -47,7 +47,6 @@ const updateAddress = (id, submitData) => {
 };
 
 export {
-  address,
   addresses,
   getAddressesBySupplierId,
   deleteAddress,

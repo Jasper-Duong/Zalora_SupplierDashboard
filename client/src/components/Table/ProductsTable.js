@@ -1,4 +1,4 @@
-import { Button, Space, Table, Popconfirm, message } from "antd";
+import { Button, Space, Table, Popconfirm, Input, message } from "antd";
 import { DeleteFilled } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import EditProductBtn from "../EditProduct/EditProductBtn";

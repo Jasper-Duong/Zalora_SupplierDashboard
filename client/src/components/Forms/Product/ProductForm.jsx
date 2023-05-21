@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Form, Input, InputNumber, Switch } from "antd";
+import { Form, Input, InputNumber, Select, Switch } from "antd";
 import React, { useEffect } from "react";
 import FormBtns from "../FormBtns";
+import { supplierOptions } from "../../../mockdata/suppliers";
 import ProductFormCancelBtn from "./ProductFormCancelBtn";
 import FormContainer from "../../Container/FormContainer";
 import { useForm } from "antd/es/form/Form";

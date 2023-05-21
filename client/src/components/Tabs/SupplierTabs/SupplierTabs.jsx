@@ -1,6 +1,7 @@
 import { Tabs } from "antd";
 import React from "react";
 import EditSupplierForm from "../../Forms/Supplier/EditSupplierForm";
+import EditAddress from "../../Forms/Supplier/Address/EditAddress";
 import HomeHeader from "../../../layout/HomeLayout/HomeHeader";
 import SupplierStock from "../../SupplierStock/SupplierStock";
 import SupplierAddresses from "./SupplierAddresses";
