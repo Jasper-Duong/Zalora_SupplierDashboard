@@ -134,20 +134,17 @@ func DeleteStockByProductID(db *gorm.DB, product_id uint32) error {
 	return nil
 }
 
-func GetMissingProductsBySupplierID(db *gorm.DB, id uint32) ([]map[string]interface{}, error) {
-	var products []map[string]interface{}
-	var err error
-	products, err = GetProductsBySupplierID(db, id)
-	var productIDs []uint32
-	for _, p := range products {
-		productIDs = append(productIDs, p["id"].(uint32))
-	}
-	var missingProducts []map[string]interface{}
-	err = db.Model(&Products{}).Select("id", "name").Not("id IN (?)", productIDs).Find(&missingProducts).Error
+func GetSupplierMissingProducts(db *gorm.DB, ids []uint32) ([]map[string]interface{}, error) {
+	var products []map[string]interface{} = make([]map[string]interface{}, 0)
+	err := db.Model(&Products{}).
+		Select("products.id, products.name").
+		Where("products.id NOT IN (?)", ids).
+		Find(&products).Error
+
 	if err != nil {
-		return make([]map[string]interface{}, 0), err
+		return nil, err
 	}
-	return missingProducts, nil
+	return products, nil
 }
 
 func GetProductMissingSuppliers(db *gorm.DB, ids []uint32) ([]map[string]interface{}, error) {

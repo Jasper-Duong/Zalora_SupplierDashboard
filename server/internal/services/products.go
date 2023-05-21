@@ -46,6 +46,7 @@ var CreateProduct = func(product *models.Products) error {
 
 var UpdateProduct = func(product *models.Products, id uint32) error {
 	_, err := models.GetProductByID(db.DB, id)
+	product.Sku = utils.SkuGenerator(product)
 	if err != nil {
 		return err
 	}
