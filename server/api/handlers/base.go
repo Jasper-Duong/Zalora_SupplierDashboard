@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -14,8 +15,9 @@ type BaseHandler struct{}
 func (h *BaseHandler) validateInput(c *gin.Context, input interface{}) error {
 	if err := c.ShouldBindJSON(input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error": "Bad Request",
 		})
+		log.Println(err.Error())
 		return err
 	}
 	return nil
@@ -24,13 +26,14 @@ func (h *BaseHandler) validateInput(c *gin.Context, input interface{}) error {
 func (h *BaseHandler) handleError(c *gin.Context, err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
+			"error": "Not found",
 		})
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"error": "Server Error",
 		})
 	}
+	log.Println(err.Error())
 }
 
 func (h *BaseHandler) parseId(c *gin.Context, id string) uint32 {

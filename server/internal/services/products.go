@@ -1,7 +1,7 @@
 package services
 
 import (
-	"server/db"
+	"server/internal/db"
 	"server/internal/models"
 	"server/internal/utils"
 	"strconv"
