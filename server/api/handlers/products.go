@@ -17,7 +17,11 @@ func NewProductsHandler() *ProductsHandler {
 
 func (h *ProductsHandler) GetProducts(c *gin.Context) {
 	var query models.ProductsQueryParams
-	c.ShouldBindQuery(&query)
+	err := c.ShouldBindQuery(&query)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
 	products, total, err := services.GetProducts(&query)
 	if err != nil {
 		h.handleError(c, err)

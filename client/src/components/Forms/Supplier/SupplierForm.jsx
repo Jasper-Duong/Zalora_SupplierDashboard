@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Form, Input, InputNumber, Switch } from "antd";
 import React, { useEffect } from "react";
 import { regexPatterns } from "../../../constants/forms";

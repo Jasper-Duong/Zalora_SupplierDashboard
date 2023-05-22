@@ -1,5 +1,5 @@
-import { Button, Popconfirm, Space, Table, Input, message } from "antd";
-import { DeleteFilled, EditOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Popconfirm, Space, Table, message } from "antd";
+import { DeleteFilled, EditOutlined } from "@ant-design/icons";
 import ExtendedTable from "./ExtendedTable";
 import HomeHeader from "../../layout/HomeLayout/HomeHeader";
 import { Link } from "react-router-dom";
@@ -39,7 +39,7 @@ const SuppliersTable = () => {
       title: "Contact Number",
       dataIndex: "contact_number",
       key: "contact_number",
-      ...CustomFilterDropdown("contact_number")
+      ...CustomFilterDropdown("contact_number"),
     },
     {
       title: "Stock",

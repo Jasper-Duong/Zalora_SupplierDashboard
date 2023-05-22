@@ -51,7 +51,7 @@ func (h *AddressesHandler) UpdateAddress(c *gin.Context) {
 	if err := services.UpdateAddress(&address, id); err != nil {
 		h.handleError(c, err)
 	}
-	h.handleSuccessCreate(c)
+	h.handleSuccessUpdate(c)
 }
 
 func (h *AddressesHandler) DeleteAddress(c *gin.Context) {
