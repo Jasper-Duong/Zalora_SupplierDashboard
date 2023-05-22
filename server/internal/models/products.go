@@ -90,8 +90,7 @@ func CreateProduct(db *gorm.DB, product *Products) error {
 }
 
 func UpdateProduct(db *gorm.DB, product *Products, id uint32) error {
-	db.Updates(&product)
-	return nil
+	return db.Updates(&product).Error
 }
 
 func DeleteProduct(db *gorm.DB, id uint32) error {

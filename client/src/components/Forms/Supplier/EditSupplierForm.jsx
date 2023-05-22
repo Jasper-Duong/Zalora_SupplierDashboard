@@ -1,21 +1,28 @@
-import React from "react";
 import SupplierForm from "./SupplierForm";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-import { getSupplierByIdApi, updateSupplierByIdApi } from "../../../services/supplier";
+import {
+  getSupplierByIdApi,
+  updateSupplierByIdApi,
+} from "../../../services/supplier";
 import useService from "../../../hooks/useService";
 
 export default function EditSupplierForm() {
-  const params = useParams()
-  const supplier = useService({service: () => getSupplierByIdApi(params.id)})
+  const params = useParams();
+  const navigate = useNavigate()
+  const supplier = useService({
+    service: () => getSupplierByIdApi(params.id),
+  });
+  const maxCount = 2;
   const onFinish = async (values) => {
     console.log(values);
     try {
-      await updateSupplierByIdApi(params.id, values)
-      message.success("Successfully Updated Supplier");
+      await updateSupplierByIdApi(params.id, values);
+      message.success({ content: "Successfully Updated Supplier", maxCount });
+      navigate("/suppliers/table")
     } catch (err) {
-      message.error("Failed" + err)
+      message.error({ content: "Failed" + err, maxCount });
     }
   };
   return (

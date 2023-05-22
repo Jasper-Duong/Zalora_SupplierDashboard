@@ -88,8 +88,7 @@ func CreateSupplier(db *gorm.DB, supplier *Suppliers) error {
 }
 
 func UpdateSupplier(db *gorm.DB, supplier *Suppliers) error {
-	db.Updates(&supplier)
-	return nil
+	return db.Updates(&supplier).Error
 }
 
 func DeleteSupplier(db *gorm.DB, id uint32) error {
