@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 	"os"
-	"server/db/migrations"
+	"server/internal/db/migrations"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

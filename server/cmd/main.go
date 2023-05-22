@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"server/api/routes"
-	"server/db"
+	"server/internal/db"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
