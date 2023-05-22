@@ -3,7 +3,7 @@ import { Button, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 export const CustomFilterDropdown = (dataIndex) => {
-    const [searchText, setSearchText] = useState('');
+    const [, setSearchText] = useState('');
     
     const handleReset = (clearFilters, confirm) => {
         clearFilters();
