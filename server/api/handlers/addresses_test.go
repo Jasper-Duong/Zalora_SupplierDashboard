@@ -25,6 +25,7 @@ type DeleteAddressService func(id uint32) error
 
 var runTests = func(t *testing.T, scenarios []Scenario) {
 	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
 	routes.LoadRoutes(r)
 
 	for _, scenario := range scenarios {

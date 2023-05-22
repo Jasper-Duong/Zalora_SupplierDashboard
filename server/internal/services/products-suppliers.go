@@ -65,7 +65,7 @@ var CreateStock = func(stock models.StockRequest) error {
 }
 
 var UpdateStock = func(stock models.StockRequest) error {
-	return models.UpdateStock(db.DB, stock.ProductID, stock.SupplierID, stock.Stock)
+	return models.UpdateStock(db.DB, stock.ProductID, stock.SupplierID, *stock.Stock)
 }
 
 var DeleteStock = func(product_id uint32, supplier_id uint32) error {

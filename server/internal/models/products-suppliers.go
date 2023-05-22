@@ -1,21 +1,23 @@
 package models
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
 type ProductsSuppliers struct {
 	ProductID  uint32    `gorm:"not null;primaryKey;"`
 	SupplierID uint32    `gorm:"not null;primaryKey;"`
-	Stock      uint32    `gorm:"column:stock;not null" json:"stock"`
+	Stock      *uint32   `gorm:"column:stock;not null" json:"stock"`
 	Products   Products  `gorm:"foreignKey:ProductID; constraint:OnDelete: CASCADE"`
 	Suppliers  Suppliers `gorm:"foreignKey:SupplierID; constraint:OnDelete: CASCADE"`
 }
 
 type StockRequest struct {
-	ProductID  uint32 `json:"product_id" binding:"required"`
-	SupplierID uint32 `json:"supplier_id" binding:"required"`
-	Stock      uint32 `json:"stock" binding:"required"`
+	ProductID  uint32  `json:"product_id" binding:"required"`
+	SupplierID uint32  `json:"supplier_id" binding:"required"`
+	Stock      *uint32 `json:"stock" binding:"required"`
 }
 
 func (current *ProductsSuppliers) AfterCreate(tx *gorm.DB) (err error) {
@@ -104,8 +106,9 @@ func UpdateStock(db *gorm.DB, product_id uint32, supplier_id uint32, stock uint3
 	new := ProductsSuppliers{
 		ProductID:  product_id,
 		SupplierID: supplier_id,
-		Stock:      stock,
+		Stock:      &stock,
 	}
+	fmt.Println(new)
 
 	return db.Model(&old).Updates(new).Error
 }
