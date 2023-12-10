@@ -1,0 +1,66 @@
+services:
+  # MySQL database
+  mysql_db:
+    # Use the official MySQL image
+    image: mysql:latest
+    # Name the service for easy identification
+    name: mysql_db
+    # Mount an environment file for sensitive information
+    environment_file: .env
+    # Set environment variables for database configuration
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+    # Expose the database port
+    ports:
+      - "3306:3306"
+    # Create a persistent volume for database data
+    volumes:
+      - "mysql_db:/var/lib/mysql"
+    # Define health check to ensure database is running
+    healthchecks:
+      # Use mysqladmin ping to check for database availability
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # Set timeout and retries for health checks
+      timeout: 10s
+      retries: 10
+
+  # Server application
+  server:
+    # Build the server image from the ./server directory
+    build: ./server
+    # Name the service for easy identification
+    name: server
+    # Depends on the mysql_db service
+    depends_on:
+      - mysql_db:
+          condition: service_healthy
+    # Mount an environment file for configuration
+    environment_file: .env
+    # Set environment variables for server configuration
+    environment:
+      CONNECTION_URL: $CONNECTION_URL
+      PORT: $PORT
+    # Expose the server port
+    ports:
+      # Replace machinePort and appPort with appropriate values
+      - "$PORT:$PORT"
+
+  # Client application
+  client:
+    # Build the client image from the ./client directory
+    build: ./client
+    # Name the service for easy identification
+    name: client
+    # Depends on the server service
+    depends_on:
+      - server:
+          condition: service_started
+    # Expose the client port
+    ports:
+      - "3000:3000"
+
+volumes:
+  # Persistent volume for database data
+  mysql_db:
+    driver: local
